@@ -3,39 +3,98 @@ const assert = require('node:assert');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { createSettings } = require('../src/store/settings');
+const { createSettings, UserError } = require('../src/store/settings');
+const vault = require('../src/store/vault');
 
-// Cifrado simulado: invierte el texto, solo para comprobar que no se guarda en claro.
-const fakeSafeStorage = (available = true) => ({
-  isAsyncEncryptionAvailable: async () => available,
-  encryptStringAsync: async (s) => Buffer.from([...s].reverse().join('')),
-  decryptStringAsync: async (b) => ({ result: [...b.toString()].reverse().join(''), shouldReEncrypt: false }),
-});
+const KEY = 'AIzaSyEjemploDeLlaveFalsa1234567890';
+const PASS = 'contraseña-larga';
+const FAST_KDF = { N: 1 << 10, r: 8, p: 1 }; // solo para que las pruebas sean rápidas
 
 const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), 'segmenta-'));
+const open = (dir) => createSettings({ dir, kdf: FAST_KDF });
+const onDisk = (dir) => {
+  const file = path.join(dir, 'settings.json');
+  return fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
+};
 
-test('guarda la llave cifrada y no la expone en el estado', async () => {
+test('sin contraseña: la llave solo vive en memoria y no se escribe en el disco', async () => {
   const dir = tmp();
-  const s = createSettings({ dir, safeStorage: fakeSafeStorage() });
-  const status = await s.save({ provider: 'openai', apiKey: 'sk-secreta' });
+  const s = open(dir);
+  assert.deepStrictEqual(await s.saveKey({ apiKey: KEY }), { provider: 'gemini', hasKey: true, hasStoredKey: false });
+  assert.strictEqual(s.getApiKey('gemini'), KEY);
+  assert.ok(!onDisk(dir).includes(KEY));
 
-  assert.deepStrictEqual(status, { provider: 'openai', hasKey: true, encryptionAvailable: true });
-  assert.ok(!fs.readFileSync(path.join(dir, 'settings.json'), 'utf8').includes('sk-secreta'));
-  assert.strictEqual(await s.getApiKey('openai'), 'sk-secreta');
+  const reopened = open(dir); // «cerrar y abrir la app»
+  assert.strictEqual(reopened.getStatus().hasKey, false);
+  assert.strictEqual(reopened.getApiKey('gemini'), null);
 });
 
-test('rechaza proveedores desconocidos', async () => {
-  const s = createSettings({ dir: tmp(), safeStorage: fakeSafeStorage() });
-  await assert.rejects(s.save({ provider: 'otro', apiKey: 'x' }));
+test('con contraseña: se guarda cifrada, queda bloqueada al reabrir y se desbloquea', async () => {
+  const dir = tmp();
+  await open(dir).saveKey({ apiKey: KEY, passphrase: PASS });
+  const disk = onDisk(dir);
+  assert.ok(!disk.includes(KEY) && !disk.includes(PASS));
+
+  const reopened = open(dir);
+  assert.deepStrictEqual(reopened.getStatus(), { provider: 'gemini', hasKey: false, hasStoredKey: true });
+  assert.strictEqual(reopened.getApiKey('gemini'), null);
+
+  await assert.rejects(reopened.unlock('contraseña-errada'), { message: 'Contraseña incorrecta.' });
+  assert.strictEqual(reopened.getApiKey('gemini'), null);
+
+  assert.deepStrictEqual(await reopened.unlock(PASS), { provider: 'gemini', hasKey: true, hasStoredKey: true });
+  assert.strictEqual(reopened.getApiKey('gemini'), KEY);
 });
 
-test('no guarda la llave si el cifrado no está disponible', async () => {
-  const s = createSettings({ dir: tmp(), safeStorage: fakeSafeStorage(false) });
-  await assert.rejects(s.save({ provider: 'gemini', apiKey: 'AIza-secreta' }));
-  assert.strictEqual((await s.getStatus()).hasKey, false);
+test('usa por defecto parámetros fuertes de scrypt y los guarda con el registro', async () => {
+  const dir = tmp();
+  await createSettings({ dir }).saveKey({ apiKey: KEY, passphrase: PASS });
+  const record = JSON.parse(onDisk(dir)).keys.gemini;
+  assert.deepStrictEqual(record.kdf, { name: 'scrypt', ...vault.DEFAULT_KDF });
+  assert.ok(record.kdf.N >= 1 << 15);
 });
 
-test('sin archivo previo usa Gemini y sin llave', async () => {
-  const s = createSettings({ dir: tmp(), safeStorage: fakeSafeStorage() });
-  assert.deepStrictEqual(await s.getStatus(), { provider: 'gemini', hasKey: false, encryptionAvailable: true });
+test('limpia espacios y saltos de línea al pegar, y rechaza llaves mal formadas', async () => {
+  const s = open(tmp());
+  await s.saveKey({ apiKey: `  ${KEY}\r\n` });
+  assert.strictEqual(s.getApiKey('gemini'), KEY);
+
+  for (const bad of ['', 'corta', 'tiene espacios en medio 1234', 'ñandú-con-tilde-1234', 'x'.repeat(301), null, 42]) {
+    await assert.rejects(s.saveKey({ apiKey: bad }), UserError, `debía rechazar ${String(bad).slice(0, 20)}`);
+  }
+});
+
+test('rechaza una contraseña corta y no guarda nada', async () => {
+  const dir = tmp();
+  const s = open(dir);
+  await assert.rejects(s.saveKey({ apiKey: KEY, passphrase: 'corta' }), UserError);
+  assert.strictEqual(s.getStatus().hasKey, false);
+  assert.strictEqual(onDisk(dir), '');
+});
+
+test('borrar la llave la quita de la memoria y del disco', async () => {
+  const dir = tmp();
+  const s = open(dir);
+  await s.saveKey({ apiKey: KEY, passphrase: PASS });
+  assert.deepStrictEqual(s.deleteKey(), { provider: 'gemini', hasKey: false, hasStoredKey: false });
+  assert.ok(!onDisk(dir).includes('"data"'));
+  assert.strictEqual(open(dir).getStatus().hasStoredKey, false);
+});
+
+test('cada proveedor tiene su propia llave y solo se aceptan proveedores conocidos', async () => {
+  const s = open(tmp());
+  await s.saveKey({ apiKey: KEY });
+  assert.strictEqual(s.setProvider('openai').hasKey, false);
+  await s.saveKey({ apiKey: 'sk-ejemplo-falso-1234567890' });
+  assert.strictEqual(s.getApiKey('gemini'), KEY);
+  assert.strictEqual(s.getApiKey('openai'), 'sk-ejemplo-falso-1234567890');
+  assert.throws(() => s.setProvider('otro'), UserError);
+});
+
+test('el cifrado detecta que el archivo fue alterado', async () => {
+  const record = await vault.encrypt(KEY, PASS, FAST_KDF);
+  assert.strictEqual(await vault.decrypt(record, PASS), KEY);
+  const tampered = { ...record, data: Buffer.from('otra-cosa-distinta').toString('base64') };
+  assert.strictEqual(await vault.decrypt(tampered, PASS), null);
+  assert.strictEqual(await vault.decrypt({ garbage: true }, PASS), null);
 });

@@ -1,25 +1,40 @@
-const provider = document.getElementById('provider');
-const apiKey = document.getElementById('apiKey');
-const status = document.getElementById('status');
+const $ = (id) => document.getElementById(id);
+const provider = $('provider');
+const apiKey = $('apiKey');
+const passphrase = $('passphrase');
+const unlockPass = $('unlockPass');
+const status = $('status');
 
-function showStatus(s) {
-  provider.value = s.provider;
-  status.textContent = s.encryptionAvailable
-    ? (s.hasKey ? 'Llave guardada (cifrada).' : 'Aún no hay llave guardada.')
-    : 'El cifrado del sistema no está disponible: no se podrán guardar llaves.';
+function describeStatus(s) {
+  if (s.hasKey && s.hasStoredKey) return 'Llave lista (guardada cifrada con tu contraseña).';
+  if (s.hasKey) return 'Llave lista solo para esta sesión: no se guarda en el disco.';
+  if (s.hasStoredKey) return 'Hay una llave guardada y bloqueada: escribe tu contraseña para desbloquearla.';
+  return 'Aún no hay llave.';
 }
 
-document.getElementById('save').addEventListener('click', async () => {
-  try {
-    showStatus(await window.segmenta.saveSettings({ provider: provider.value, apiKey: apiKey.value }));
-    apiKey.value = '';
-  } catch (err) {
-    status.textContent = err.message;
+// Muestra el resultado de una operación de ajustes; los campos de contraseña se vacían siempre.
+function show(result) {
+  apiKey.value = passphrase.value = unlockPass.value = '';
+  if (!result.ok) {
+    status.textContent = result.message;
+    return;
   }
-});
+  const s = result.status;
+  provider.value = s.provider;
+  status.textContent = describeStatus(s);
+  $('unlockBox').hidden = !(s.hasStoredKey && !s.hasKey);
+  $('delete').disabled = !(s.hasKey || s.hasStoredKey);
+}
 
-const planBox = document.getElementById('plan');
-const run = document.getElementById('run');
+provider.addEventListener('change', async () => show(await window.segmenta.setProvider(provider.value)));
+$('save').addEventListener('click', async () => {
+  show(await window.segmenta.saveKey({ apiKey: apiKey.value, passphrase: passphrase.value }));
+});
+$('unlock').addEventListener('click', async () => show(await window.segmenta.unlock(unlockPass.value)));
+$('delete').addEventListener('click', async () => show(await window.segmenta.deleteKey()));
+
+const planBox = $('plan');
+const run = $('run');
 
 function describePlan(r) {
   if (!r.ok) return [r.message, ...(r.errors || []).map((e) => `· ${e}`)].join('\n');
@@ -40,7 +55,7 @@ run.addEventListener('click', async () => {
   run.disabled = true;
   planBox.textContent = 'Generando plan…';
   try {
-    planBox.textContent = describePlan(await window.segmenta.createPlan(document.getElementById('request').value));
+    planBox.textContent = describePlan(await window.segmenta.createPlan($('request').value));
   } catch {
     planBox.textContent = 'No se pudo generar el plan.';
   } finally {
@@ -48,4 +63,4 @@ run.addEventListener('click', async () => {
   }
 });
 
-window.segmenta.getSettings().then(showStatus);
+window.segmenta.getSettings().then(show);

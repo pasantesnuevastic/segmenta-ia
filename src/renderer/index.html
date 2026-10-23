@@ -31,9 +31,21 @@
       </select>
 
       <label for="apiKey">Llave de API</label>
-      <input id="apiKey" type="password" autocomplete="off" placeholder="Pega la llave para guardarla cifrada">
+      <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="Pega la llave">
 
-      <button id="save">Guardar</button>
+      <label for="passphrase">Contraseña para guardarla cifrada (opcional)</label>
+      <input id="passphrase" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
+      <p class="hint">Sin contraseña, la llave solo se conserva mientras la aplicación esté abierta y no se escribe en el disco. Si olvidas la contraseña, tendrás que pegar la llave de nuevo.</p>
+
+      <button id="save">Usar llave</button>
+
+      <div id="unlockBox" hidden>
+        <label for="unlockPass">Contraseña de la llave guardada</label>
+        <input id="unlockPass" type="password" autocomplete="current-password">
+        <button id="unlock">Desbloquear</button>
+      </div>
+
+      <button id="delete">Borrar llave</button>
       <p id="status" role="status"></p>
     </section>
   </main>

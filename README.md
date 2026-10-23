@@ -39,14 +39,16 @@ npm start      # abre la ventana (hoy: esqueleto con ajustes de proveedor y llav
 npm test
 ```
 
-Hoy existen: el esqueleto de la ventana, los ajustes (proveedor de IA y llave cifrada con el almacén del sistema), el contrato del plan con su validador y el planificador que pide el plan al modelo. El planificador está probado solo con respuestas simuladas, todavía no contra las API reales. La búsqueda, la depuración y el CSV siguen En desarrollo.
+Hoy existen: el esqueleto de la ventana, los ajustes (proveedor de IA y llave de API, en memoria o cifrada con una contraseña), el contrato del plan con su validador y el planificador que pide el plan al modelo. El planificador está probado solo con respuestas simuladas, todavía no contra las API reales. La búsqueda, la depuración y el CSV siguen En desarrollo.
 
 Estructura: `src/main` (proceso principal), `src/renderer` (interfaz), `src/core/validator` (contrato y validador del plan), `src/core/planner` (prompt, proveedores de IA y orquestación), `src/store` (ajustes y llave cifrada), `test/`.
 
 ## Datos y privacidad
 
 - Al proveedor de IA solo se envía el texto del pedido, las columnas permitidas y los límites; nunca filas de resultados.
-- Las llaves de API se guardan cifradas en los ajustes de la aplicación y nunca en este repositorio. `.env.example` solo lista nombres de variables, sin valores.
+- La llave de API se pega en los ajustes de la aplicación y nunca va en este repositorio. Por defecto vive solo en memoria durante la sesión y no se escribe en el disco. Si la persona elige una contraseña, se guarda cifrada (scrypt + AES-256-GCM); la contraseña no se guarda y, si se olvida, hay que pegar la llave de nuevo. La interfaz nunca recibe la llave de vuelta.
+- Límite conocido: un programa malicioso que corra con el mismo usuario de Windows podría leer la llave de la memoria mientras la aplicación está abierta. Conviene usar una llave dedicada, con límites de uso en el proveedor.
+- `.env.example` solo lista nombres de variables, sin valores; la aplicación todavía no lee ese archivo.
 - Los resultados dependen de la cobertura de las fuentes públicas y no son un universo completo; verifique los datos antes de contactar.
 - Quien use los CSV responde por el tratamiento posterior de los datos de contacto (Ley 1581 de 2012).
 
