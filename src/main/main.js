@@ -1,6 +1,7 @@
 const path = require('node:path');
 const { app, BrowserWindow, ipcMain, safeStorage } = require('electron');
 const { createSettings } = require('../store/settings');
+const { planRequest } = require('../core/planner');
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -26,6 +27,13 @@ app.whenReady().then(() => {
 
   ipcMain.handle('settings:get', () => settings.getStatus());
   ipcMain.handle('settings:save', (_event, input) => settings.save(input));
+
+  // La llave se lee y se usa solo aquí, en el proceso principal; la interfaz nunca la recibe.
+  ipcMain.handle('plan:create', async (_event, request) => {
+    const { provider } = await settings.getStatus();
+    const apiKey = await settings.getApiKey(provider);
+    return planRequest({ request, provider, apiKey });
+  });
 
   createWindow();
   app.on('activate', () => {

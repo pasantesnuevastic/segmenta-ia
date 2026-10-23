@@ -15,10 +15,11 @@
   <main>
     <section>
       <h2>Pedido</h2>
-      <textarea id="request" rows="3" disabled
+      <textarea id="request" rows="3" maxlength="500"
         placeholder="Ej.: restaurantes de Neiva con teléfono y sitio web"></textarea>
-      <button id="run" disabled>Generar plan</button>
-      <p class="hint">El planificador, la búsqueda y el CSV aún no están construidos.</p>
+      <button id="run">Generar plan</button>
+      <pre id="plan" role="status"></pre>
+      <p class="hint">Hoy solo se genera y muestra el plan: la búsqueda y el CSV aún no están construidos.</p>
     </section>
 
     <section>

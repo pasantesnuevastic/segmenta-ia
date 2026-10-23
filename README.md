@@ -39,7 +39,9 @@ npm start      # abre la ventana (hoy: esqueleto con ajustes de proveedor y llav
 npm test
 ```
 
-Hoy solo existe el esqueleto de la ventana y los ajustes (proveedor de IA y llave cifrada con el almacén del sistema). El resto del flujo sigue En desarrollo.
+Hoy existen: el esqueleto de la ventana, los ajustes (proveedor de IA y llave cifrada con el almacén del sistema), el contrato del plan con su validador y el planificador que pide el plan al modelo. El planificador está probado solo con respuestas simuladas, todavía no contra las API reales. La búsqueda, la depuración y el CSV siguen En desarrollo.
+
+Estructura: `src/main` (proceso principal), `src/renderer` (interfaz), `src/core/validator` (contrato y validador del plan), `src/core/planner` (prompt, proveedores de IA y orquestación), `src/store` (ajustes y llave cifrada), `test/`.
 
 ## Datos y privacidad
 
