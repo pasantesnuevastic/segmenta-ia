@@ -29,6 +29,18 @@ La persona escribe, por ejemplo, «restaurantes de Neiva con teléfono y sitio w
 | Modelo local sin conexión | Propuesto |
 | ≤ 5 min del pedido al CSV (hasta 100 registros); 100 % de filas con fuente y fecha | Meta (por validar en un piloto) |
 
+## Desarrollo
+
+Requiere Node.js 22 o superior en Windows.
+
+```bash
+npm install
+npm start      # abre la ventana (hoy: esqueleto con ajustes de proveedor y llave)
+npm test
+```
+
+Hoy solo existe el esqueleto de la ventana y los ajustes (proveedor de IA y llave cifrada con el almacén del sistema). El resto del flujo sigue En desarrollo.
+
 ## Datos y privacidad
 
 - Al proveedor de IA solo se envía el texto del pedido, las columnas permitidas y los límites; nunca filas de resultados.

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'">
+  <title>Segmenta IA</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Segmenta IA</h1>
+    <span class="badge">EN DESARROLLO</span>
+  </header>
+
+  <main>
+    <section>
+      <h2>Pedido</h2>
+      <textarea id="request" rows="3" disabled
+        placeholder="Ej.: restaurantes de Neiva con teléfono y sitio web"></textarea>
+      <button id="run" disabled>Generar plan</button>
+      <p class="hint">El planificador, la búsqueda y el CSV aún no están construidos.</p>
+    </section>
+
+    <section>
+      <h2>Ajustes</h2>
+      <label for="provider">Proveedor de IA</label>
+      <select id="provider">
+        <option value="gemini">Gemini</option>
+        <option value="openai">OpenAI</option>
+      </select>
+
+      <label for="apiKey">Llave de API</label>
+      <input id="apiKey" type="password" autocomplete="off" placeholder="Pega la llave para guardarla cifrada">
+
+      <button id="save">Guardar</button>
+      <p id="status" role="status"></p>
+    </section>
+  </main>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
