@@ -1,0 +1,25 @@
+# Dependencias y compilados
+node_modules/
+dist/
+out/
+build/
+coverage/
+
+# Secretos y configuración local
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Logs
+*.log
+npm-debug.log*
+
+# Resultados generados por la aplicación (pueden contener datos de contacto)
+output/
+
+# Sistema operativo
+Thumbs.db
+desktop.ini
+.DS_Store
