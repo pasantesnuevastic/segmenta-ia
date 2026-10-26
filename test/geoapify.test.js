@@ -171,3 +171,24 @@ test('traduce límites de cuenta, llave inválida, JSON incorrecto y timeout a e
     (error) => error instanceof OSMError && error.code === 'timeout',
   );
 });
+
+test('informa explícitamente cuando falta la llave configurada fuera de la interfaz', async () => {
+  const provider = createGeoapifyProvider({
+    apiKey: '',
+    resolveLocation: async () => bounds,
+    fetchImpl: async () => {
+      throw new Error('No debe consultar sin llave');
+    },
+  });
+
+  await assert.rejects(
+    provider.search({
+      query: 'parqueaderos',
+      place: 'Neiva',
+      limit: 10,
+      retrievedAt: '2026-10-26T21:00:00.000Z',
+    }),
+    (error) => error instanceof OSMError && error.code === 'no_key'
+      && error.message.includes('GEOAPIFY_API_KEY'),
+  );
+});

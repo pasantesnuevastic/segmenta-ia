@@ -39,9 +39,6 @@ function createSettings({ dir, kdf = vault.DEFAULT_KDF }) {
       provider,
       hasKey: Boolean(memory[provider]),
       hasStoredKey: Boolean(data.keys?.[provider]),
-      searchProvider: 'geoapify',
-      hasSearchKey: Boolean(memory.geoapify),
-      hasStoredSearchKey: Boolean(data.keys?.geoapify),
     };
   }
 
@@ -93,10 +90,6 @@ function createSettings({ dir, kdf = vault.DEFAULT_KDF }) {
   const saveKey = (input) => saveKeyFor(currentProvider(read()), input ?? {});
   const unlock = (passphrase) => unlockKeyFor(currentProvider(read()), passphrase);
   const deleteKey = () => deleteKeyFor(currentProvider(read()));
-  const saveSearchKey = (input) => saveKeyFor('geoapify', input ?? {});
-  const unlockSearchKey = (passphrase) => unlockKeyFor('geoapify', passphrase);
-  const deleteSearchKey = () => deleteKeyFor('geoapify');
-
   // Solo para el proceso principal (planificador). Nunca exponer por IPC.
   function getApiKey(provider) {
     return memory[provider] ?? null;
@@ -108,9 +101,6 @@ function createSettings({ dir, kdf = vault.DEFAULT_KDF }) {
     saveKey,
     unlock,
     deleteKey,
-    saveSearchKey,
-    unlockSearchKey,
-    deleteSearchKey,
     getApiKey,
   };
 }

@@ -3,9 +3,6 @@ const provider = $('provider');
 const apiKey = $('apiKey');
 const passphrase = $('passphrase');
 const unlockPass = $('unlockPass');
-const geoapifyKey = $('geoapifyKey');
-const geoapifyPassphrase = $('geoapifyPassphrase');
-const unlockGeoapifyPass = $('unlockGeoapifyPass');
 const status = $('status');
 
 function describeKeyStatus(hasKey, hasStoredKey) {
@@ -18,7 +15,6 @@ function describeKeyStatus(hasKey, hasStoredKey) {
 // Muestra el resultado de una operación de ajustes; los campos de contraseña se vacían siempre.
 function show(result) {
   apiKey.value = passphrase.value = unlockPass.value = '';
-  geoapifyKey.value = geoapifyPassphrase.value = unlockGeoapifyPass.value = '';
   if (!result.ok) {
     status.textContent = result.message;
     return;
@@ -28,9 +24,6 @@ function show(result) {
   status.textContent = describeKeyStatus(s.hasKey, s.hasStoredKey);
   $('unlockBox').hidden = !(s.hasStoredKey && !s.hasKey);
   $('delete').disabled = !(s.hasKey || s.hasStoredKey);
-  $('geoapifyStatus').textContent = describeKeyStatus(s.hasSearchKey, s.hasStoredSearchKey);
-  $('unlockGeoapifyBox').hidden = !(s.hasStoredSearchKey && !s.hasSearchKey);
-  $('deleteGeoapify').disabled = !(s.hasSearchKey || s.hasStoredSearchKey);
 }
 
 provider.addEventListener('change', async () => show(await window.segmenta.setProvider(provider.value)));
@@ -39,13 +32,6 @@ $('save').addEventListener('click', async () => {
 });
 $('unlock').addEventListener('click', async () => show(await window.segmenta.unlock(unlockPass.value)));
 $('delete').addEventListener('click', async () => show(await window.segmenta.deleteKey()));
-$('saveGeoapify').addEventListener('click', async () => {
-  show(await window.segmenta.saveSearchKey({ apiKey: geoapifyKey.value, passphrase: geoapifyPassphrase.value }));
-});
-$('unlockGeoapify').addEventListener('click', async () => {
-  show(await window.segmenta.unlockSearchKey(unlockGeoapifyPass.value));
-});
-$('deleteGeoapify').addEventListener('click', async () => show(await window.segmenta.deleteSearchKey()));
 
 const planBox = $('plan');
 const run = $('run');

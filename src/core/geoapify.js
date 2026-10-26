@@ -124,7 +124,7 @@ function createGeoapifyProvider({
 } = {}) {
   async function search({ query, place, limit, retrievedAt, onStatus = () => {} }) {
     if (typeof apiKey !== 'string' || !apiKey.trim()) {
-      throw new OSMError('no_key', 'Falta la llave de Geoapify. Configúrala en Ajustes para consultar lugares.');
+      throw new OSMError('no_key', 'Falta la llave de Geoapify. Configura GEOAPIFY_API_KEY en el archivo .env y reinicia la aplicación.');
     }
     if (typeof resolveLocation !== 'function') {
       throw new OSMError('provider_error', 'El geocodificador no está configurado.');
