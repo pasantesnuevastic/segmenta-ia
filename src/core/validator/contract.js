@@ -7,7 +7,7 @@ const ALLOWED_COLUMNS = ['name', 'address', 'phone', 'website', 'category', 'lat
 
 const LIMITS = {
   maxSearches: 5,
-  maxResults: 100,
+  maxResults: 1000,
   maxTextLength: 100, // query y place
   maxExplanationLength: 300,
   maxNotes: 5, // warnings y unknown_terms

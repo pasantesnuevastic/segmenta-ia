@@ -27,7 +27,7 @@ La persona escribe, por ejemplo, «restaurantes de Neiva con teléfono y sitio w
 | Ejecución OpenStreetMap, depuración y exportación a CSV | Implementadas en el proceso principal y cubiertas por pruebas simuladas; la interfaz actual todavía no conecta estos pasos |
 | Fuente adicional: Google Places (requiere llave con facturación) | Propuesto |
 | Modelo local sin conexión | Propuesto |
-| ≤ 5 min del pedido al CSV (hasta 100 registros); 100 % de filas con fuente y fecha | Meta (por validar en un piloto) |
+| ≤ 5 min del pedido al CSV (hasta 1000 registros); 100 % de filas con fuente y fecha | Meta (por validar en un piloto) |
 
 ## Desarrollo
 
@@ -69,7 +69,7 @@ if (planned.ok) {
 unsubscribe();
 ```
 
-Los códigos de error de ejecución incluyen `invalid_plan`, `unsupported_criteria`, `location_not_found`, `location_too_large`, `timeout`, `rate_limited`, `service_unavailable`, `network_error` e `invalid_response`; la interfaz debe mostrar `message`. Si ya hay una consulta activa, devuelve `busy`. La exportación puede devolver `cancelled`, `bad_request` o `write_failed`; también debe mostrar `message`. Por prudencia con el servicio público, se rechazan ubicaciones cuya caja geográfica exceda 0,5 grados en latitud o longitud. Una ejecución sin coincidencias es exitosa, con `rows: []`, `resultCount: 0` y un aviso.
+El planificador aplica 50 resultados por defecto si la persona no indica una cantidad. Los valores válidos son de 1 a 1000; pide al modelo limitar a 1000 y avisar si la persona solicita más. El validador rechaza un plan que supere el máximo. Una solicitud ajena a la búsqueda de negocios debe producir un plan válido sin búsquedas; el planificador lo convierte en `out_of_scope` con un mensaje para reformular. Los códigos de error de ejecución incluyen `invalid_plan`, `unsupported_criteria`, `location_not_found`, `location_too_large`, `timeout`, `rate_limited`, `service_unavailable`, `network_error` e `invalid_response`; la interfaz debe mostrar `message`. Si ya hay una consulta activa, devuelve `busy`. La exportación puede devolver `cancelled`, `bad_request` o `write_failed`; también debe mostrar `message`. Por prudencia con el servicio público, se rechazan ubicaciones cuya caja geográfica exceda 0,5 grados en latitud o longitud. Una ejecución sin coincidencias es exitosa, con `rows: []`, `resultCount: 0` y un aviso.
 
 Las columnas CSV se escriben en este orden fijo: las columnas solicitadas según `ALLOWED_COLUMNS` (`name`, `address`, `phone`, `website`, `category`, `latitude`, `longitude`), seguidas de `source`, `source_url`, `retrieved_at`, `source_updated_at` y `attribution`. Se incluyen solo las columnas solicitadas y siempre los cinco campos de trazabilidad/licencia. La fecha ISO `retrieved_at` la asigna la aplicación; `source_updated_at` conserva la marca de actualización de OpenStreetMap y queda vacía si no está disponible. `attribution` contiene `© OpenStreetMap contributors (ODbL)`. Identificadores OSM se conservan en la respuesta de búsqueda (`osm_type`, `osm_id`) y se usan para deduplicar, pero no se agregan como columnas CSV.
 

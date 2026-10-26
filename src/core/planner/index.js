@@ -35,9 +35,12 @@ async function planRequest({ request, provider, apiKey, model, fetchImpl = fetch
     return fail('invalid_json', 'El modelo no devolvió un plan en JSON. Intenta reformular el pedido.');
   }
 
-  const result = validatePlan(parsed);
+  const result = validatePlan(parsed, { allowEmptySearches: true });
   if (!result.ok) {
     return fail('invalid_plan', 'El plan del modelo no cumple las reglas y se descartó. Intenta reformular el pedido.', result.errors);
+  }
+  if (result.plan.searches.length === 0) {
+    return fail('out_of_scope', 'No pude identificar una solicitud de búsqueda de negocios. Describe qué tipo de negocio quieres consultar y en qué ubicación.');
   }
   return { ok: true, plan: result.plan, usage: answer.usage, model: usedModel };
 }

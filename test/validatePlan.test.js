@@ -79,6 +79,21 @@ test('max_results: entero entre 1 y el tope', () => {
   rejects((p) => { p.max_results = 0; }, 'max_results');
   rejects((p) => { p.max_results = 10.5; }, 'max_results');
   rejects((p) => { p.max_results = '50'; }, 'max_results');
+  const minimum = valid();
+  minimum.max_results = 1;
+  assert.equal(validatePlan(minimum).ok, true);
+  const maximum = valid();
+  maximum.max_results = 1000;
+  assert.equal(validatePlan(maximum).ok, true);
+});
+
+test('solo el planificador puede validar un plan sin búsquedas para informar fuera de alcance', () => {
+  const plan = valid();
+  plan.searches = [];
+  assert.equal(validatePlan(plan).ok, false);
+  const classification = validatePlan(plan, { allowEmptySearches: true });
+  assert.equal(classification.ok, true);
+  assert.deepStrictEqual(classification.plan.searches, []);
 });
 
 test('límites de textos y listas de avisos', () => {

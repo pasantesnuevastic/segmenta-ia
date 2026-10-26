@@ -36,7 +36,7 @@ function checkNotes(value, where, errors) {
 
 // Valida un plan ya convertido a objeto. Rechaza (no recorta) todo lo que no cumple el contrato.
 // Devuelve { ok: true, plan } con el plan normalizado, o { ok: false, errors }.
-function validatePlan(input) {
+function validatePlan(input, { allowEmptySearches = false } = {}) {
   const errors = [];
   if (!isObject(input)) return { ok: false, errors: ['El plan debe ser un objeto JSON'] };
 
@@ -47,7 +47,7 @@ function validatePlan(input) {
   if (!Array.isArray(input.searches)) {
     errors.push('searches: debe ser una lista');
   } else {
-    if (input.searches.length < 1) errors.push('searches: debe tener al menos una búsqueda');
+    if (!allowEmptySearches && input.searches.length < 1) errors.push('searches: debe tener al menos una búsqueda');
     if (input.searches.length > LIMITS.maxSearches) errors.push(`searches: supera ${LIMITS.maxSearches} búsquedas`);
     input.searches.forEach((s, i) => {
       if (!isObject(s)) return errors.push(`searches[${i}]: debe ser un objeto`);
