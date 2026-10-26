@@ -221,6 +221,39 @@ test('reporta ubicaciones vacías, límites HTTP y tiempos de espera como errore
   assert.equal(timeoutCalls, 1);
 });
 
+test('acepta la caja administrativa de Ibagué y continúa con la consulta de negocios', async () => {
+  const ibague = {
+    category: 'boundary',
+    type: 'administrative',
+    addresstype: 'city',
+    name: 'Ibagué',
+    display_name: 'Ibagué, Centro, Tolima, Colombia',
+    boundingbox: ['4.2578563', '4.6993257', '-75.5246959', '-74.9667451'],
+  };
+  const fake = fakeFetch([response([ibague]), response({ elements: [] })]);
+  const provider = createOsmProvider({
+    fetchImpl: fake.fetchImpl,
+    nominatimUrl: 'https://nominatim.test/search',
+    overpassUrl: 'https://overpass.test/api/interpreter',
+  });
+
+  const result = await provider.search({
+    query: 'restaurantes',
+    place: 'Ibagué',
+    limit: 10,
+    retrievedAt: '2026-10-26T19:00:00.000Z',
+  });
+
+  assert.equal(fake.calls.length, 2);
+  assert.deepEqual(result.location, {
+    south: 4.2578563,
+    north: 4.6993257,
+    west: -75.5246959,
+    east: -74.9667451,
+  });
+  assert.deepEqual(result.elements, []);
+});
+
 test('resuelve zonas aunque la primera coincidencia sea un negocio y conserva parqueaderos sin nombre', async () => {
   const comuna = {
     category: 'boundary',

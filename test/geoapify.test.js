@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createGeoapifyProvider, GEOAPIFY_ATTRIBUTION } = require('../src/core/geoapify');
-const { OSMError } = require('../src/core/osm');
+const { createOsmProvider, OSMError } = require('../src/core/osm');
 
 const bounds = { south: 2.91, north: 2.94, west: -75.30, east: -75.27 };
 const response = (body, status = 200) => ({
@@ -80,6 +80,51 @@ test('consulta Geoapify por categoría y área; conserva procedencia, coordenada
     osm_type: 'way',
     osm_id: 456,
   });
+});
+
+test('resuelve Ibagué y envía su caja a Geoapify para buscar restaurantes', async () => {
+  const requests = [];
+  const ibague = {
+    category: 'boundary',
+    type: 'administrative',
+    addresstype: 'city',
+    name: 'Ibagué',
+    display_name: 'Ibagué, Centro, Tolima, Colombia',
+    boundingbox: ['4.2578563', '4.6993257', '-75.5246959', '-74.9667451'],
+  };
+  const locationProvider = createOsmProvider({
+    nominatimUrl: 'https://nominatim.test/search',
+    fetchImpl: async (url) => {
+      requests.push(new URL(url));
+      return response([ibague]);
+    },
+  });
+  const provider = createGeoapifyProvider({
+    apiKey: 'geoapify-test-key',
+    resolveLocation: locationProvider.resolveLocation,
+    endpoint: 'https://geoapify.test/v2/places',
+    fetchImpl: async (url) => {
+      requests.push(new URL(url));
+      return response({ type: 'FeatureCollection', features: [feature] });
+    },
+  });
+
+  const result = await provider.search({
+    query: 'restaurantes',
+    place: 'Ibagué',
+    limit: 10,
+    retrievedAt: '2026-10-26T21:00:00.000Z',
+  });
+
+  assert.equal(requests.length, 2);
+  assert.equal(requests[0].hostname, 'nominatim.test');
+  assert.equal(requests[1].hostname, 'geoapify.test');
+  assert.equal(requests[1].searchParams.get('categories'), 'catering.restaurant');
+  assert.equal(
+    requests[1].searchParams.get('filter'),
+    'rect:-75.5246959,4.2578563,-74.9667451,4.6993257',
+  );
+  assert.equal(result.elements.length, 1);
 });
 
 test('acepta respuesta sin coincidencias y marca registros sin identificador OSM sin inventar un enlace', async () => {

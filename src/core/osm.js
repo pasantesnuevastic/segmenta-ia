@@ -6,7 +6,7 @@ const OVERPASS_TIMEOUT_MS = 35000;
 const OVERPASS_QUERY_TIMEOUT_SECONDS = 25;
 const NOMINATIM_RESULT_LIMIT = 5;
 const NOMINATIM_MIN_INTERVAL_MS = 1000;
-const MAX_BOUNDS_SPAN_DEGREES = 0.5;
+const MAX_BOUNDS_SPAN_DEGREES = 0.75;
 const OSM_ATTRIBUTION = '© OpenStreetMap contributors (ODbL)';
 const LOCATION_CONNECTORS = new Set(['de', 'del', 'la', 'el', 'los', 'las', 'zona', 'sector']);
 
