@@ -11,3 +11,10 @@ button { margin-top: 12px; padding: 8px 16px; font: inherit; }
 [hidden] { display: none; }
 #plan { white-space: pre-wrap; font: inherit; font-size: 14px; margin: 12px 0 0; }
 .hint, #status { font-size: 13px; color: #52606d; }
+#results { margin-top: 20px; }
+.table-scroll { max-width: 100%; overflow: auto; }
+table { border-collapse: collapse; font-size: 13px; width: 100%; }
+th, td { border: 1px solid #d9e2ec; padding: 6px; text-align: left; vertical-align: top; }
+td { max-width: 240px; overflow-wrap: anywhere; }
+button:disabled { cursor: wait; opacity: 0.65; }
+@media (max-width: 700px) { main { grid-template-columns: 1fr; padding: 12px; } }

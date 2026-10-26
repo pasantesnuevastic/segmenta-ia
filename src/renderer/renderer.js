@@ -35,15 +35,32 @@ $('delete').addEventListener('click', async () => show(await window.segmenta.del
 
 const planBox = $('plan');
 const run = $('run');
+const progress = $('progress');
+const resultsBox = $('results');
+const exportButton = $('export');
+let lastResults = null;
+
+const PROGRESS_MESSAGES = {
+  search_started: (event) => `Búsqueda ${event.searchIndex} de ${event.totalSearches}: ${event.query} en ${event.place}.`,
+  geocoding: (event) => `Resolviendo ubicación: ${event.place}…`,
+  querying: () => 'Consultando OpenStreetMap…',
+  search_completed: (event) => `Búsqueda ${event.searchIndex} de ${event.totalSearches} terminada; ${event.resultCount} resultado(s) acumulado(s).`,
+  failed: (event) => event.message,
+  completed: (event) => `Consulta terminada: ${event.resultCount} resultado(s), ${event.duplicateCount} duplicado(s) eliminado(s).`,
+};
+
+function progressMessage(event) {
+  return PROGRESS_MESSAGES[event.status]?.(event) ?? `Estado: ${event.status}`;
+}
 
 function describePlan(r) {
   if (!r.ok) return [r.message, ...(r.errors || []).map((e) => `· ${e}`)].join('\n');
   const { plan } = r;
   const lines = [
-    'Plan (aún no ejecutado):',
+    'Plan aprobado:',
     plan.explanation,
     ...plan.searches.map((s) => `· Buscar «${s.query}» en ${s.place}`),
-    `Columnas: ${plan.columns.join(', ')} (más fuente y fecha de consulta)`,
+    `Columnas: ${plan.columns.join(', ')} (más fuente, fechas, enlace y atribución)`,
     `Máximo de resultados: ${plan.max_results}`,
   ];
   if (plan.warnings.length) lines.push('Avisos:', ...plan.warnings.map((w) => `· ${w}`));
@@ -51,16 +68,110 @@ function describePlan(r) {
   return lines.join('\n');
 }
 
+function renderResults(result) {
+  resultsBox.hidden = false;
+  exportButton.disabled = false;
+  $('summary').textContent = `${result.resultCount} resultado(s); ${result.duplicateCount} duplicado(s) eliminado(s). Fuente: ${result.source}.`;
+  $('warnings').replaceChildren();
+  for (const warning of result.warnings) {
+    const item = document.createElement('p');
+    item.textContent = `Aviso: ${warning}`;
+    $('warnings').append(item);
+  }
+
+  const table = $('resultsTable');
+  table.replaceChildren();
+  const head = document.createElement('thead');
+  const headerRow = document.createElement('tr');
+  for (const column of result.columns) {
+    const cell = document.createElement('th');
+    cell.scope = 'col';
+    cell.textContent = column;
+    headerRow.append(cell);
+  }
+  head.append(headerRow);
+  table.append(head);
+
+  const body = document.createElement('tbody');
+  for (const row of result.rows.slice(0, 20)) {
+    const tableRow = document.createElement('tr');
+    for (const column of result.columns) {
+      const cell = document.createElement('td');
+      cell.textContent = String(row[column] ?? '');
+      tableRow.append(cell);
+    }
+    body.append(tableRow);
+  }
+  table.append(body);
+  if (result.rows.length > 20) {
+    const note = document.createElement('p');
+    note.className = 'hint';
+    note.textContent = `Se muestran los primeros 20 resultados; el CSV incluirá los ${result.resultCount}.`;
+    $('warnings').append(note);
+  }
+}
+
 run.addEventListener('click', async () => {
   run.disabled = true;
+  exportButton.disabled = true;
+  lastResults = null;
+  resultsBox.hidden = true;
+  progress.textContent = 'Generando plan…';
   planBox.textContent = 'Generando plan…';
+  let unsubscribe = () => {};
   try {
-    planBox.textContent = describePlan(await window.segmenta.createPlan($('request').value));
+    const planned = await window.segmenta.createPlan($('request').value);
+    planBox.textContent = describePlan(planned);
+    if (!planned.ok) {
+      progress.textContent = planned.message;
+      return;
+    }
+
+    progress.textContent = 'Ejecutando el plan…';
+    unsubscribe = window.segmenta.onSearchProgress((event) => {
+      progress.textContent = progressMessage(event);
+    });
+    const result = await window.segmenta.executePlan(planned.plan);
+    if (!result.ok) {
+      progress.textContent = result.message;
+      planBox.textContent += `\n\nNo se pudo completar la búsqueda (${result.code}): ${result.message}`;
+      return;
+    }
+
+    lastResults = result;
+    renderResults(result);
+    progress.textContent = result.resultCount
+      ? 'Puedes revisar los resultados y guardar el CSV.'
+      : 'La consulta terminó sin coincidencias; puedes guardar un CSV con encabezados y avisos.';
   } catch {
-    planBox.textContent = 'No se pudo generar el plan.';
+    progress.textContent = 'Ocurrió un error inesperado. Intenta de nuevo.';
   } finally {
+    unsubscribe();
     run.disabled = false;
   }
 });
 
-window.segmenta.getSettings().then(show);
+exportButton.addEventListener('click', async () => {
+  if (!lastResults) return;
+  exportButton.disabled = true;
+  progress.textContent = 'Preparando el CSV…';
+  try {
+    const saved = await window.segmenta.exportCsv({
+      columns: lastResults.columns,
+      rows: lastResults.rows,
+    });
+    if (!saved.ok) {
+      progress.textContent = saved.code === 'cancelled' ? 'Guardado cancelado.' : saved.message;
+      return;
+    }
+    progress.textContent = `CSV guardado en: ${saved.path} (${saved.rowCount} filas).`;
+  } catch {
+    progress.textContent = 'No se pudo exportar el CSV. Intenta de nuevo.';
+  } finally {
+    exportButton.disabled = false;
+  }
+});
+
+window.segmenta.getSettings().then(show).catch(() => {
+  status.textContent = 'No se pudieron cargar los ajustes.';
+});

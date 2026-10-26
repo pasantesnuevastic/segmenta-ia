@@ -17,9 +17,18 @@
       <h2>Pedido</h2>
       <textarea id="request" rows="3" maxlength="500"
         placeholder="Ej.: restaurantes de Neiva con teléfono y sitio web"></textarea>
-      <button id="run">Generar plan</button>
+      <button id="run">Generar plan y buscar</button>
+      <p id="progress" class="hint" role="status" aria-live="polite"></p>
       <pre id="plan" role="status"></pre>
-      <p class="hint">Esta interfaz aún solo muestra el plan; el proceso principal ya expone búsqueda y exportación para conectarlas.</p>
+      <div id="results" hidden>
+        <h2>Resultados</h2>
+        <p id="summary" class="hint"></p>
+        <div id="warnings" class="hint"></div>
+        <div class="table-scroll">
+          <table id="resultsTable"></table>
+        </div>
+        <button id="export" disabled>Guardar CSV</button>
+      </div>
     </section>
 
     <section>

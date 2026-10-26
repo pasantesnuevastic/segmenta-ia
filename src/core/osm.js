@@ -10,6 +10,7 @@ const OSM_ATTRIBUTION = '© OpenStreetMap contributors (ODbL)';
 
 const CATEGORY_TERMS = [
   { phrases: ['restaurantes', 'restaurante', 'restaurants', 'restaurant'], key: 'amenity', value: 'restaurant' },
+  { phrases: ['parqueaderos', 'parqueadero', 'estacionamientos', 'estacionamiento', 'parking lots', 'parking lot', 'parking'], key: 'amenity', value: 'parking' },
   { phrases: ['cafeterias', 'cafeteria', 'cafes', 'cafe'], key: 'amenity', value: 'cafe' },
   { phrases: ['bares', 'bar'], key: 'amenity', value: 'bar' },
   { phrases: ['panaderias', 'panaderia', 'bakeries', 'bakery'], key: 'shop', value: 'bakery' },

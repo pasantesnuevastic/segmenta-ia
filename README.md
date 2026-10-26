@@ -24,7 +24,7 @@ La persona escribe, por ejemplo, «restaurantes de Neiva con teléfono y sitio w
 | Plataforma Segmenta (proyecto aparte; se relaciona con esta aplicación solo mediante archivos CSV) | Existente |
 | Aplicación de escritorio (Electron, Windows) | En desarrollo |
 | Planificador con LLM y validador del plan | Implementados; planificador probado con respuestas simuladas |
-| Ejecución OpenStreetMap, depuración y exportación a CSV | Implementadas en el proceso principal y cubiertas por pruebas simuladas; la interfaz actual todavía no conecta estos pasos |
+| Ejecución OpenStreetMap, depuración y exportación a CSV | Implementadas en el proceso principal, conectadas a la interfaz y cubiertas por pruebas simuladas; pendientes de aceptación con servicios reales |
 | Fuente adicional: Google Places (requiere llave con facturación) | Propuesto |
 | Modelo local sin conexión | Propuesto |
 | ≤ 5 min del pedido al CSV (hasta 1000 registros); 100 % de filas con fuente y fecha | Meta (por validar en un piloto) |
@@ -35,11 +35,11 @@ Requiere Node.js 22 o superior en Windows.
 
 ```bash
 npm install
-npm start      # abre la ventana de desarrollo (la interfaz aún solo genera y muestra planes)
+npm start      # abre la ventana con el flujo completo de plan, búsqueda OSM y exportación CSV
 npm test
 ```
 
-La aplicación expone la búsqueda, el procesamiento y la exportación por IPC/preload para que la interfaz pueda conectarlos. Los proveedores de IA siguen probados con respuestas simuladas; la búsqueda tiene pruebas simuladas y requiere una prueba de aceptación contra los servicios públicos antes de la demostración.
+La ventana actual completa el flujo: genera un plan, ejecuta la consulta, presenta el estado y los resultados y permite guardar el CSV. El proveedor de IA y la búsqueda tienen pruebas automatizadas simuladas; falta repetir una consulta de aceptación contra los servicios públicos cuando estén disponibles.
 
 Estructura: `src/main` (proceso principal e IPC), `src/renderer` (interfaz), `src/core/validator` (contrato y validador del plan), `src/core/planner` (prompt, proveedores de IA y orquestación), `src/core/osm.js` (Nominatim y Overpass), `src/core/runner.js` (ejecución serial del plan), `src/core/results.js` (deduplicación y CSV), `src/store` (ajustes y llave cifrada), `test/`.
 
@@ -48,9 +48,9 @@ Estructura: `src/main` (proceso principal e IPC), `src/renderer` (interfaz), `sr
 `window.segmenta` ya incluye estas operaciones:
 
 - `createPlan(request)` → `{ ok: true, plan, usage, model }` o `{ ok: false, code, message, errors? }`. No ejecuta la búsqueda.
-- `executePlan(plan)` → `{ ok, code?, message?, source, retrievedAt, columns, rows, resultCount, duplicateCount, warnings }`. La entrada es el plan completo devuelto por `createPlan`; también se valida antes de ejecutar.
+- `executePlan(plan)` → `{ ok, code?, message?, source, retrievedAt, columns, rows, resultCount, duplicateCount, warnings }`. La entrada es el plan completo devuelto por `createPlan`; también se valida antes de ejecutar. La interfaz actual ya lo llama.
 - `onSearchProgress(listener)` → registra un listener y devuelve una función para cancelar la suscripción. Estados: `search_started`, `geocoding`, `querying`, `search_completed`, `failed`, `completed`. Los eventos incluyen `searchIndex`, `totalSearches` y, cuando aplica, `query`, `place`, `resultCount`, `code` y `message`.
-- `exportCsv({ columns, rows })` → `{ ok: true, path, rowCount }`, `{ ok: false, code: 'cancelled', message }` o un error con código y mensaje. Pasar `columns` y `rows` directamente desde la respuesta exitosa de `executePlan`; Electron abre el diálogo de guardado.
+- `exportCsv({ columns, rows })` → `{ ok: true, path, rowCount }`, `{ ok: false, code: 'cancelled', message }` o un error con código y mensaje. Pasar `columns` y `rows` directamente desde la respuesta exitosa de `executePlan`; Electron abre el diálogo de guardado. La interfaz actual ya realiza esta llamada desde el botón para guardar.
 
 Ejemplo de integración desde el renderer:
 
@@ -75,7 +75,7 @@ Las columnas CSV se escriben en este orden fijo: las columnas solicitadas según
 
 La deduplicación conserva la primera aparición: primero usa el identificador estable `tipo + ID` de OpenStreetMap; si falta, usa nombre y dirección normalizados (Unicode, tildes, mayúsculas y puntuación); si no hay dirección, usa nombre y teléfono. Si no hay una combinación suficiente, conserva la fila. Los campos ausentes se representan como celdas vacías.
 
-OpenStreetMap se consulta solo para categorías explícitamente mapeadas en `src/core/osm.js`; el resto de criterios se devuelve en `warnings` y no se convierte en una búsqueda libre. Overpass solo devuelve objetos con nombre, usa un límite de ejecución de 25 segundos y la aplicación conserva hasta el máximo permitido por el plan. Las solicitudes se hacen una a una; Nominatim usa un `User-Agent` identificable, caché en memoria y un intervalo mínimo de un segundo. Los endpoints pueden sustituirse mediante `SEGMENTA_NOMINATIM_URL` y `SEGMENTA_OVERPASS_URL`. La aplicación atribuye los datos a OpenStreetMap (© colaboradores de OpenStreetMap, ODbL). Verificar las políticas antes de un piloto: [Nominatim Usage Policy](https://operations.osmfoundation.org/policies/nominatim/) y [Overpass API Commons](https://dev.overpass-api.de/overpass-doc/en/preface/commons.html). El control de frecuencia local no limita el tráfico agregado de todas las copias; para un piloto con varias personas, configurar un proxy/proveedor propio o un servicio con capacidad y políticas adecuadas.
+OpenStreetMap se consulta solo para categorías explícitamente mapeadas en `src/core/osm.js` (incluye parqueaderos como `amenity=parking`); el resto de criterios se devuelve en `warnings` y no se convierte en una búsqueda libre. No se modifica OSM ni se añaden palabras a sus datos: la aplicación traduce términos del pedido a etiquetas existentes. Overpass solo devuelve objetos con nombre, usa un límite de ejecución de 25 segundos y la aplicación conserva hasta el máximo permitido por el plan. Las solicitudes se hacen una a una; Nominatim usa un `User-Agent` identificable, caché en memoria y un intervalo mínimo de un segundo. Los endpoints pueden sustituirse mediante `SEGMENTA_NOMINATIM_URL` y `SEGMENTA_OVERPASS_URL`. La aplicación atribuye los datos a OpenStreetMap (© colaboradores de OpenStreetMap, ODbL). Verificar las políticas antes de un piloto: [Nominatim Usage Policy](https://operations.osmfoundation.org/policies/nominatim/) y [Overpass API Commons](https://dev.overpass-api.de/overpass-doc/en/preface/commons.html). El control de frecuencia local no limita el tráfico agregado de todas las copias; para un piloto con varias personas, configurar un proxy/proveedor propio o un servicio con capacidad y políticas adecuadas.
 
 ## Datos y privacidad
 

@@ -213,3 +213,20 @@ test('rechaza una búsqueda que no tenga ninguna categoría soportada', async ()
   );
   assert.equal(calls, 0);
 });
+
+test('traduce parqueaderos a la etiqueta amenity=parking de OpenStreetMap', async () => {
+  const fake = fakeFetch([response(location), response({ elements: [] })]);
+  const provider = createOsmProvider({
+    fetchImpl: fake.fetchImpl,
+    nominatimUrl: 'https://nominatim.test/search',
+    overpassUrl: 'https://overpass.test/api/interpreter',
+  });
+  await provider.search({
+    query: 'parqueaderos',
+    place: 'centro, Neiva, Huila',
+    limit: 10,
+    retrievedAt: '2026-10-26T19:00:00.000Z',
+  });
+  const query = new URLSearchParams(fake.calls[1].options.body).get('data');
+  assert.match(query, /nwr\["amenity"="parking"\]\["name"\]/);
+});
