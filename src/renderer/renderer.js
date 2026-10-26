@@ -138,7 +138,6 @@ run.addEventListener('click', async () => {
     const result = await window.segmenta.executePlan(planned.plan);
     if (!result.ok) {
       progress.textContent = result.message;
-      planBox.textContent += `\n\nNo se pudo completar la búsqueda (${result.code}): ${result.message}`;
       return;
     }
 

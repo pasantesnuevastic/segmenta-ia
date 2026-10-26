@@ -19,7 +19,14 @@ function fakeFetch(responses) {
   return { fetchImpl, calls };
 }
 
-const location = [{ boundingbox: ['-2.95', '-2.85', '-75.35', '-75.20'] }];
+const location = [{
+  category: 'boundary',
+  type: 'administrative',
+  name: 'Neiva',
+  display_name: 'Neiva, Huila, Colombia',
+  address: { city: 'Neiva', state: 'Huila', country: 'Colombia' },
+  boundingbox: ['-2.95', '-2.85', '-75.35', '-75.20'],
+}];
 const element = {
   type: 'node',
   id: 123,
@@ -55,7 +62,8 @@ test('consulta Nominatim y Overpass en serie y normaliza procedencia y fecha de 
   assert.equal(fake.calls[0].options.signal.aborted, false);
   assert.equal(fake.calls[1].options.method, 'POST');
   const query = new URLSearchParams(fake.calls[1].options.body).get('data');
-  assert.match(query, /nwr\["amenity"="restaurant"\]\["name"\].*out meta center;/);
+  assert.match(query, /nwr\["amenity"="restaurant"\].*out meta center;/);
+  assert.doesNotMatch(query, /\["name"\]/);
   assert.deepEqual(result.elements[0], {
     name: 'Café "La Esquina", Neiva',
     address: 'Calle 8',
@@ -119,7 +127,13 @@ test('serializa las solicitudes Nominatim concurrentes con al menos un segundo d
     fetchImpl: async (url) => {
       if (String(url).startsWith('https://nominatim.test/')) {
         starts.push(clock);
-        return response(location);
+        const place = new URL(url).searchParams.get('q');
+        return response([{
+          ...location[0],
+          name: place,
+          display_name: place,
+          address: { city: place },
+        }]);
       }
       return response({ elements: [] });
     },
@@ -147,6 +161,7 @@ test('reporta ubicaciones vacías, límites HTTP y tiempos de espera como errore
   const noLocation = createOsmProvider({
     fetchImpl: async () => response([]),
     nominatimUrl: 'https://nominatim.test/search',
+    sleep: async () => {},
   });
   await assert.rejects(
     noLocation.search({ query: 'restaurantes', place: 'Lugar desconocido', limit: 1, retrievedAt: 'x' }),
@@ -154,8 +169,13 @@ test('reporta ubicaciones vacías, límites HTTP y tiempos de espera como errore
   );
 
   const tooLarge = createOsmProvider({
-    fetchImpl: async () => response([{ boundingbox: ['-5', '5', '-80', '-70'] }]),
+    fetchImpl: async () => response([{
+      category: 'boundary',
+      name: 'Colombia',
+      boundingbox: ['-5', '5', '-80', '-70'],
+    }]),
     nominatimUrl: 'https://nominatim.test/search',
+    sleep: async () => {},
   });
   await assert.rejects(
     tooLarge.search({ query: 'restaurantes', place: 'Colombia', limit: 1, retrievedAt: 'x' }),
@@ -201,6 +221,56 @@ test('reporta ubicaciones vacías, límites HTTP y tiempos de espera como errore
   assert.equal(timeoutCalls, 1);
 });
 
+test('resuelve zonas aunque la primera coincidencia sea un negocio y conserva parqueaderos sin nombre', async () => {
+  const comuna = {
+    category: 'boundary',
+    type: 'administrative',
+    name: 'Comuna Centro',
+    display_name: 'Comuna Centro, Neiva, Huila, Colombia',
+    address: { city: 'Neiva', state: 'Huila', country: 'Colombia' },
+    boundingbox: ['2.9195133', '2.9343182', '-75.2976238', '-75.2789688'],
+  };
+  const unnamedParking = {
+    type: 'node',
+    id: 456,
+    lat: 2.92,
+    lon: -75.29,
+    tags: { amenity: 'parking' },
+  };
+  const fake = fakeFetch([
+    response([{ category: 'shop', name: 'Ferretería', boundingbox: ['2.92', '2.93', '-75.30', '-75.29'] }]),
+    response([comuna]),
+    response({ elements: [unnamedParking] }),
+  ]);
+  const provider = createOsmProvider({
+    fetchImpl: fake.fetchImpl,
+    nominatimUrl: 'https://nominatim.test/search',
+    overpassUrl: 'https://overpass.test/api/interpreter',
+    sleep: async () => {},
+  });
+  const result = await provider.search({
+    query: 'parqueaderos',
+    place: 'centro de Neiva',
+    limit: 10,
+    retrievedAt: '2026-10-26T19:00:00.000Z',
+  });
+
+  assert.equal(fake.calls.length, 3);
+  assert.equal(new URL(fake.calls[0].url).searchParams.get('q'), 'centro de Neiva');
+  assert.equal(new URL(fake.calls[1].url).searchParams.get('q'), 'centro neiva');
+  assert.deepEqual(result.location, {
+    south: 2.9195133,
+    north: 2.9343182,
+    west: -75.2976238,
+    east: -75.2789688,
+  });
+  assert.equal(result.elements.length, 1);
+  assert.equal(result.elements[0].name, '');
+  const query = new URLSearchParams(fake.calls[2].options.body).get('data');
+  assert.match(query, /nwr\["amenity"="parking"\]\(/);
+  assert.doesNotMatch(query, /\["name"\]/);
+});
+
 test('rechaza una búsqueda que no tenga ninguna categoría soportada', async () => {
   let calls = 0;
   const provider = createOsmProvider({
@@ -228,5 +298,6 @@ test('traduce parqueaderos a la etiqueta amenity=parking de OpenStreetMap', asyn
     retrievedAt: '2026-10-26T19:00:00.000Z',
   });
   const query = new URLSearchParams(fake.calls[1].options.body).get('data');
-  assert.match(query, /nwr\["amenity"="parking"\]\["name"\]/);
+  assert.match(query, /nwr\["amenity"="parking"\]\(/);
+  assert.doesNotMatch(query, /\["name"\]/);
 });

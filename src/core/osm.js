@@ -4,9 +4,11 @@ const USER_AGENT = 'SegmentaIA/0.1 (https://github.com/pasantesnuevastic/segment
 const NOMINATIM_TIMEOUT_MS = 10000;
 const OVERPASS_TIMEOUT_MS = 35000;
 const OVERPASS_QUERY_TIMEOUT_SECONDS = 25;
+const NOMINATIM_RESULT_LIMIT = 5;
 const NOMINATIM_MIN_INTERVAL_MS = 1000;
 const MAX_BOUNDS_SPAN_DEGREES = 0.5;
 const OSM_ATTRIBUTION = '© OpenStreetMap contributors (ODbL)';
+const LOCATION_CONNECTORS = new Set(['de', 'del', 'la', 'el', 'los', 'las', 'zona', 'sector']);
 
 const CATEGORY_TERMS = [
   { phrases: ['restaurantes', 'restaurante', 'restaurants', 'restaurant'], key: 'amenity', value: 'restaurant' },
@@ -83,13 +85,47 @@ function timeoutSignal(timeoutMs) {
   return AbortSignal.timeout(timeoutMs);
 }
 
+function locationQueries(place) {
+  const simplified = normalizeText(place).split(/\s+/)
+    .filter((term) => term && !LOCATION_CONNECTORS.has(term))
+    .join(' ');
+  return [...new Set([place.trim(), simplified])].filter(Boolean);
+}
+
+function areaCandidates(data, query) {
+  if (!Array.isArray(data)) return [];
+  const terms = normalizeText(query).split(/\s+/)
+    .filter((term) => term && !LOCATION_CONNECTORS.has(term));
+  return data.flatMap((match) => {
+    if (!['boundary', 'place'].includes(match?.category)) return [];
+    const box = match.boundingbox?.map(Number);
+    if (!Array.isArray(box) || box.length !== 4 || box.some((value) => !Number.isFinite(value))) return [];
+    const bounds = { south: box[0], north: box[1], west: box[2], east: box[3] };
+    if (bounds.south < -90 || bounds.north > 90 || bounds.west < -180 || bounds.east > 180
+      || bounds.south > bounds.north || bounds.west > bounds.east) return [];
+
+    const name = normalizeText(match.name || '');
+    const displayName = normalizeText(match.display_name || '');
+    const address = normalizeText(Object.values(match.address || {}).join(' '));
+    const nameMatches = terms.filter((term) => name.split(/\s+/).includes(term)).length;
+    if (!nameMatches) return [];
+    const addressMatches = terms.filter((term) => address.split(/\s+/).includes(term)).length;
+    const displayMatches = terms.filter((term) => displayName.split(/\s+/).includes(term)).length;
+    const area = (bounds.north - bounds.south) * (bounds.east - bounds.west);
+    return [{ bounds, score: nameMatches * 8 + addressMatches * 4 + displayMatches, area }];
+  }).sort((a, b) => b.score - a.score || a.area - b.area);
+}
+
 async function readJson(fetchImpl, url, options, service) {
   let response;
   try {
     response = await fetchImpl(url, options);
   } catch (error) {
     if (error?.name === 'TimeoutError' || error?.name === 'AbortError') {
-      throw new OSMError('timeout', `${service} tardó demasiado en responder.`);
+      const guidance = service === 'Overpass'
+        ? ' El servicio público puede estar saturado; espera un poco antes de reintentar.'
+        : '';
+      throw new OSMError('timeout', `${service} tardó demasiado en responder.${guidance}`);
     }
     throw new OSMError('network_error', `No hay conexión con ${service}.`);
   }
@@ -167,36 +203,39 @@ function createOsmProvider({
 
     const request = nominatimQueue.then(async () => {
       if (geocodeCache.has(cacheKey)) return geocodeCache.get(cacheKey);
-      const delay = Math.max(0, nextNominatimAt - now());
-      if (delay) await sleep(delay);
-      nextNominatimAt = now() + NOMINATIM_MIN_INTERVAL_MS;
+      let oversizedAreaFound = false;
+      for (const query of locationQueries(place)) {
+        const delay = Math.max(0, nextNominatimAt - now());
+        if (delay) await sleep(delay);
+        nextNominatimAt = now() + NOMINATIM_MIN_INTERVAL_MS;
 
-      const url = new URL(nominatimUrl);
-      url.searchParams.set('q', place);
-      url.searchParams.set('format', 'jsonv2');
-      url.searchParams.set('limit', '1');
-      url.searchParams.set('accept-language', 'es');
-      const data = await readJson(fetchImpl, url, {
-        headers: { 'User-Agent': USER_AGENT, accept: 'application/json' },
-        signal: timeoutSignal(NOMINATIM_TIMEOUT_MS),
-      }, 'Nominatim');
+        const url = new URL(nominatimUrl);
+        url.searchParams.set('q', query);
+        url.searchParams.set('format', 'jsonv2');
+        url.searchParams.set('limit', String(NOMINATIM_RESULT_LIMIT));
+        url.searchParams.set('addressdetails', '1');
+        url.searchParams.set('accept-language', 'es');
+        const data = await readJson(fetchImpl, url, {
+          headers: { 'User-Agent': USER_AGENT, accept: 'application/json' },
+          signal: timeoutSignal(NOMINATIM_TIMEOUT_MS),
+        }, 'Nominatim');
 
-      const match = Array.isArray(data) ? data[0] : null;
-      const box = match?.boundingbox?.map(Number);
-      if (!match || !Array.isArray(box) || box.length !== 4 || box.some((value) => !Number.isFinite(value))) {
-        throw new OSMError('location_not_found', `No se pudo resolver la ubicación «${place}» en OpenStreetMap.`);
+        const candidates = areaCandidates(data, query);
+        for (const candidate of candidates) {
+          const { bounds } = candidate;
+          if (bounds.north - bounds.south > MAX_BOUNDS_SPAN_DEGREES
+            || bounds.east - bounds.west > MAX_BOUNDS_SPAN_DEGREES) {
+            oversizedAreaFound = true;
+            continue;
+          }
+          geocodeCache.set(cacheKey, bounds);
+          return bounds;
+        }
       }
-      const bounds = { south: box[0], north: box[1], west: box[2], east: box[3] };
-      if (bounds.south < -90 || bounds.north > 90 || bounds.west < -180 || bounds.east > 180
-        || bounds.south > bounds.north || bounds.west > bounds.east) {
-        throw new OSMError('invalid_response', 'Nominatim devolvió límites geográficos no válidos.');
-      }
-      if (bounds.north - bounds.south > MAX_BOUNDS_SPAN_DEGREES
-        || bounds.east - bounds.west > MAX_BOUNDS_SPAN_DEGREES) {
+      if (oversizedAreaFound) {
         throw new OSMError('location_too_large', 'La ubicación es demasiado extensa para una consulta pública. Indica una ciudad o zona más pequeña.');
       }
-      geocodeCache.set(cacheKey, bounds);
-      return bounds;
+      throw new OSMError('location_not_found', `No se pudo resolver «${place}» como una zona geográfica en OpenStreetMap. Prueba con el nombre de un barrio, comuna o ciudad.`);
     });
     nominatimQueue = request.then(() => undefined, () => undefined);
     return request;
@@ -212,7 +251,7 @@ function createOsmProvider({
     const bounds = await geocode(place);
     onStatus('querying');
     const selectors = translated.categories.map(({ key, value }) =>
-      `nwr["${key}"="${value}"]["name"](${bounds.south},${bounds.west},${bounds.north},${bounds.east});`,
+      `nwr["${key}"="${value}"](${bounds.south},${bounds.west},${bounds.north},${bounds.east});`,
     );
     const overpassQuery = `[out:json][timeout:${OVERPASS_QUERY_TIMEOUT_SECONDS}];(${selectors.join('')});out meta center;`;
     const body = new URLSearchParams({ data: overpassQuery }).toString();
