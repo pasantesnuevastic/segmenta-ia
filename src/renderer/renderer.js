@@ -3,27 +3,34 @@ const provider = $('provider');
 const apiKey = $('apiKey');
 const passphrase = $('passphrase');
 const unlockPass = $('unlockPass');
+const geoapifyKey = $('geoapifyKey');
+const geoapifyPassphrase = $('geoapifyPassphrase');
+const unlockGeoapifyPass = $('unlockGeoapifyPass');
 const status = $('status');
 
-function describeStatus(s) {
-  if (s.hasKey && s.hasStoredKey) return 'Llave lista (guardada cifrada con tu contraseña).';
-  if (s.hasKey) return 'Llave lista solo para esta sesión: no se guarda en el disco.';
-  if (s.hasStoredKey) return 'Hay una llave guardada y bloqueada: escribe tu contraseña para desbloquearla.';
+function describeKeyStatus(hasKey, hasStoredKey) {
+  if (hasKey && hasStoredKey) return 'Llave lista (guardada cifrada con tu contraseña).';
+  if (hasKey) return 'Llave lista solo para esta sesión: no se guarda en el disco.';
+  if (hasStoredKey) return 'Hay una llave guardada y bloqueada: escribe tu contraseña para desbloquearla.';
   return 'Aún no hay llave.';
 }
 
 // Muestra el resultado de una operación de ajustes; los campos de contraseña se vacían siempre.
 function show(result) {
   apiKey.value = passphrase.value = unlockPass.value = '';
+  geoapifyKey.value = geoapifyPassphrase.value = unlockGeoapifyPass.value = '';
   if (!result.ok) {
     status.textContent = result.message;
     return;
   }
   const s = result.status;
   provider.value = s.provider;
-  status.textContent = describeStatus(s);
+  status.textContent = describeKeyStatus(s.hasKey, s.hasStoredKey);
   $('unlockBox').hidden = !(s.hasStoredKey && !s.hasKey);
   $('delete').disabled = !(s.hasKey || s.hasStoredKey);
+  $('geoapifyStatus').textContent = describeKeyStatus(s.hasSearchKey, s.hasStoredSearchKey);
+  $('unlockGeoapifyBox').hidden = !(s.hasStoredSearchKey && !s.hasSearchKey);
+  $('deleteGeoapify').disabled = !(s.hasSearchKey || s.hasStoredSearchKey);
 }
 
 provider.addEventListener('change', async () => show(await window.segmenta.setProvider(provider.value)));
@@ -32,6 +39,13 @@ $('save').addEventListener('click', async () => {
 });
 $('unlock').addEventListener('click', async () => show(await window.segmenta.unlock(unlockPass.value)));
 $('delete').addEventListener('click', async () => show(await window.segmenta.deleteKey()));
+$('saveGeoapify').addEventListener('click', async () => {
+  show(await window.segmenta.saveSearchKey({ apiKey: geoapifyKey.value, passphrase: geoapifyPassphrase.value }));
+});
+$('unlockGeoapify').addEventListener('click', async () => {
+  show(await window.segmenta.unlockSearchKey(unlockGeoapifyPass.value));
+});
+$('deleteGeoapify').addEventListener('click', async () => show(await window.segmenta.deleteSearchKey()));
 
 const planBox = $('plan');
 const run = $('run');
@@ -43,7 +57,7 @@ let lastResults = null;
 const PROGRESS_MESSAGES = {
   search_started: (event) => `Búsqueda ${event.searchIndex} de ${event.totalSearches}: ${event.query} en ${event.place}.`,
   geocoding: (event) => `Resolviendo ubicación: ${event.place}…`,
-  querying: () => 'Consultando OpenStreetMap…',
+  querying: () => 'Consultando Geoapify…',
   search_completed: (event) => `Búsqueda ${event.searchIndex} de ${event.totalSearches} terminada; ${event.resultCount} resultado(s) acumulado(s).`,
   search_failed: (event) => `No se pudo consultar la zona ${event.searchIndex} de ${event.totalSearches} (${event.place}): ${event.message} Se continuará con las demás zonas del plan.`,
   failed: (event) => event.message,
@@ -75,7 +89,7 @@ function describePlan(r) {
 function renderResults(result) {
   resultsBox.hidden = false;
   exportButton.disabled = false;
-  $('summary').textContent = `${result.resultCount} resultado(s); ${result.duplicateCount} duplicado(s) eliminado(s). Fuente: ${result.source}.`;
+  $('summary').textContent = `${result.resultCount} resultado(s); ${result.duplicateCount} duplicado(s) eliminado(s). Fuente: ${result.source}. ${result.attribution}`;
   $('warnings').replaceChildren();
   for (const warning of result.warnings) {
     const item = document.createElement('p');

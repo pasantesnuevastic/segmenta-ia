@@ -283,7 +283,7 @@ function createOsmProvider({
     };
   }
 
-  return { search };
+  return { search, resolveLocation: geocode };
 }
 
 module.exports = {

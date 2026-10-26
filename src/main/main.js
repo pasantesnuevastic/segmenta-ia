@@ -5,6 +5,7 @@ const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const { createSettings, UserError } = require('../store/settings');
 const { planRequest } = require('../core/planner');
 const { createOsmProvider } = require('../core/osm');
+const { createGeoapifyProvider } = require('../core/geoapify');
 const { runPlan } = require('../core/runner');
 const { ALLOWED_COLUMNS, LIMITS } = require('../core/validator/contract');
 const { CSV_COLUMNS, outputColumns, serializeCsv } = require('../core/results');
@@ -48,7 +49,7 @@ function handle(channel, fn) {
 
 app.whenReady().then(() => {
   const settings = createSettings({ dir: app.getPath('userData') });
-  const osmProvider = createOsmProvider();
+  const locationProvider = createOsmProvider();
   let searchRunning = false;
   const withStatus = (status) => ({ ok: true, status });
 
@@ -57,6 +58,9 @@ app.whenReady().then(() => {
   handle('settings:save-key', async (input) => withStatus(await settings.saveKey(input ?? {})));
   handle('settings:unlock', async (passphrase) => withStatus(await settings.unlock(passphrase)));
   handle('settings:delete-key', () => withStatus(settings.deleteKey()));
+  handle('settings:save-search-key', async (input) => withStatus(await settings.saveSearchKey(input ?? {})));
+  handle('settings:unlock-search-key', async (passphrase) => withStatus(await settings.unlockSearchKey(passphrase)));
+  handle('settings:delete-search-key', () => withStatus(settings.deleteSearchKey()));
 
   // La llave se lee y se usa solo aquí, en el proceso principal; la interfaz nunca la recibe.
   handle('plan:create', async (request) => {
@@ -69,6 +73,17 @@ app.whenReady().then(() => {
   });
 
   handle('search:run', async (plan, event) => {
+    const searchStatus = settings.getStatus();
+    const searchApiKey = settings.getApiKey('geoapify');
+    if (!searchApiKey) {
+      return {
+        ok: false,
+        code: searchStatus.hasStoredSearchKey ? 'locked' : 'no_key',
+        message: searchStatus.hasStoredSearchKey
+          ? 'La llave de Geoapify está guardada y bloqueada: desbloquéala en Ajustes.'
+          : 'Falta la llave de Geoapify. Pega una llave en Ajustes para buscar lugares.',
+      };
+    }
     if (searchRunning) {
       return { ok: false, code: 'busy', message: 'Ya hay una búsqueda en curso. Espera a que termine antes de iniciar otra.' };
     }
@@ -76,7 +91,10 @@ app.whenReady().then(() => {
     try {
       return await runPlan({
         plan,
-        osmProvider,
+        osmProvider: createGeoapifyProvider({
+          apiKey: searchApiKey,
+          resolveLocation: locationProvider.resolveLocation,
+        }),
         onProgress: (progress) => {
           if (!event.sender.isDestroyed()) event.sender.send('search:progress', progress);
         },

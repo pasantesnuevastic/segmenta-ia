@@ -1,6 +1,7 @@
 const { validatePlan } = require('./validator/validatePlan');
 const { OSMError, OSM_ATTRIBUTION } = require('./osm');
 const { normalizeResults } = require('./results');
+const DEFAULT_SOURCE = 'OpenStreetMap';
 
 function fail(code, message, errors) {
   return { ok: false, code, message, ...(errors && { errors }) };
@@ -10,7 +11,7 @@ async function runPlan({ plan: input, osmProvider, onProgress = () => {}, now = 
   const validation = validatePlan(input);
   if (!validation.ok) return fail('invalid_plan', 'El plan no cumple el contrato y no se ejecutó.', validation.errors);
   if (!osmProvider || typeof osmProvider.search !== 'function') {
-    return fail('provider_error', 'El proveedor OpenStreetMap no está configurado.');
+    return fail('provider_error', 'El proveedor de lugares no está configurado.');
   }
 
   const plan = validation.plan;
@@ -18,6 +19,8 @@ async function runPlan({ plan: input, osmProvider, onProgress = () => {}, now = 
   const gathered = [];
   const warnings = [...plan.warnings];
   const searchFailures = [];
+  let source = osmProvider.source || DEFAULT_SOURCE;
+  let attribution = osmProvider.attribution || OSM_ATTRIBUTION;
   let duplicateCount = 0;
 
   for (let index = 0; index < plan.searches.length; index += 1) {
@@ -35,6 +38,8 @@ async function runPlan({ plan: input, osmProvider, onProgress = () => {}, now = 
           ...search,
         }),
       });
+      source = result.source || source;
+      attribution = result.attribution || attribution;
       warnings.push(...(result.warnings ?? []));
       gathered.push(...(result.elements ?? []));
 
@@ -78,7 +83,7 @@ async function runPlan({ plan: input, osmProvider, onProgress = () => {}, now = 
 
   const normalized = normalizeResults(gathered, plan.columns);
   duplicateCount = Math.max(duplicateCount, normalized.duplicateCount);
-  if (normalized.rows.length === 0) warnings.push('OpenStreetMap no devolvió resultados para esta consulta.');
+  if (normalized.rows.length === 0) warnings.push(`${source} no devolvió resultados para esta consulta.`);
   onProgress({
     status: 'completed',
     resultCount: normalized.rows.length,
@@ -87,8 +92,8 @@ async function runPlan({ plan: input, osmProvider, onProgress = () => {}, now = 
   });
   return {
     ok: true,
-    source: 'OpenStreetMap',
-    attribution: OSM_ATTRIBUTION,
+    source,
+    attribution,
     retrievedAt,
     columns: normalized.columns,
     rows: normalized.rows.slice(0, plan.max_results),

@@ -134,6 +134,30 @@ test('procesa una consulta sin resultados como éxito exportable y reporta el es
   assert.ok(result.warnings.some((warning) => warning.includes('no devolvió resultados')));
 });
 
+test('conserva el proveedor y la atribución que entrega el adaptador de búsqueda', async () => {
+  const result = await runPlan({
+    plan: { ...plan, searches: [plan.searches[0]] },
+    osmProvider: {
+      source: 'Geoapify',
+      attribution: 'Powered by Geoapify',
+      async search({ retrievedAt }) {
+        return {
+          source: 'Geoapify',
+          attribution: 'Powered by Geoapify',
+          elements: [record({ source: 'Geoapify', attribution: 'Powered by Geoapify', retrieved_at: retrievedAt })],
+          warnings: [],
+        };
+      },
+    },
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.source, 'Geoapify');
+  assert.equal(result.attribution, 'Powered by Geoapify');
+  assert.equal(result.rows[0].source, 'Geoapify');
+  assert.equal(result.rows[0].attribution, 'Powered by Geoapify');
+});
+
 test('devuelve al integrador el error de proveedor y notifica progreso fallido', async () => {
   const progress = [];
   const result = await runPlan({

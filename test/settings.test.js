@@ -7,6 +7,7 @@ const { createSettings, UserError } = require('../src/store/settings');
 const vault = require('../src/store/vault');
 
 const KEY = 'AIzaSyEjemploDeLlaveFalsa1234567890';
+const GEOAPIFY_KEY = 'geoapify-demo-key-1234567890';
 const PASS = 'contraseña-larga';
 const FAST_KDF = { N: 1 << 10, r: 8, p: 1 }; // solo para que las pruebas sean rápidas
 
@@ -20,7 +21,14 @@ const onDisk = (dir) => {
 test('sin contraseña: la llave solo vive en memoria y no se escribe en el disco', async () => {
   const dir = tmp();
   const s = open(dir);
-  assert.deepStrictEqual(await s.saveKey({ apiKey: KEY }), { provider: 'gemini', hasKey: true, hasStoredKey: false });
+  assert.deepStrictEqual(await s.saveKey({ apiKey: KEY }), {
+    provider: 'gemini',
+    hasKey: true,
+    hasStoredKey: false,
+    searchProvider: 'geoapify',
+    hasSearchKey: false,
+    hasStoredSearchKey: false,
+  });
   assert.strictEqual(s.getApiKey('gemini'), KEY);
   assert.ok(!onDisk(dir).includes(KEY));
 
@@ -36,13 +44,27 @@ test('con contraseña: se guarda cifrada, queda bloqueada al reabrir y se desblo
   assert.ok(!disk.includes(KEY) && !disk.includes(PASS));
 
   const reopened = open(dir);
-  assert.deepStrictEqual(reopened.getStatus(), { provider: 'gemini', hasKey: false, hasStoredKey: true });
+  assert.deepStrictEqual(reopened.getStatus(), {
+    provider: 'gemini',
+    hasKey: false,
+    hasStoredKey: true,
+    searchProvider: 'geoapify',
+    hasSearchKey: false,
+    hasStoredSearchKey: false,
+  });
   assert.strictEqual(reopened.getApiKey('gemini'), null);
 
   await assert.rejects(reopened.unlock('contraseña-errada'), { message: 'Contraseña incorrecta.' });
   assert.strictEqual(reopened.getApiKey('gemini'), null);
 
-  assert.deepStrictEqual(await reopened.unlock(PASS), { provider: 'gemini', hasKey: true, hasStoredKey: true });
+  assert.deepStrictEqual(await reopened.unlock(PASS), {
+    provider: 'gemini',
+    hasKey: true,
+    hasStoredKey: true,
+    searchProvider: 'geoapify',
+    hasSearchKey: false,
+    hasStoredSearchKey: false,
+  });
   assert.strictEqual(reopened.getApiKey('gemini'), KEY);
 });
 
@@ -76,7 +98,14 @@ test('borrar la llave la quita de la memoria y del disco', async () => {
   const dir = tmp();
   const s = open(dir);
   await s.saveKey({ apiKey: KEY, passphrase: PASS });
-  assert.deepStrictEqual(s.deleteKey(), { provider: 'gemini', hasKey: false, hasStoredKey: false });
+  assert.deepStrictEqual(s.deleteKey(), {
+    provider: 'gemini',
+    hasKey: false,
+    hasStoredKey: false,
+    searchProvider: 'geoapify',
+    hasSearchKey: false,
+    hasStoredSearchKey: false,
+  });
   assert.ok(!onDisk(dir).includes('"data"'));
   assert.strictEqual(open(dir).getStatus().hasStoredKey, false);
 });
@@ -89,6 +118,39 @@ test('cada proveedor tiene su propia llave y solo se aceptan proveedores conocid
   assert.strictEqual(s.getApiKey('gemini'), KEY);
   assert.strictEqual(s.getApiKey('openai'), 'sk-ejemplo-falso-1234567890');
   assert.throws(() => s.setProvider('otro'), UserError);
+});
+
+test('la llave Geoapify se guarda separada de la llave de IA y puede bloquearse y desbloquearse', async () => {
+  const dir = tmp();
+  const settings = open(dir);
+  await settings.saveKey({ apiKey: KEY });
+  await settings.saveSearchKey({ apiKey: GEOAPIFY_KEY, passphrase: PASS });
+
+  assert.strictEqual(settings.getApiKey('gemini'), KEY);
+  assert.strictEqual(settings.getApiKey('geoapify'), GEOAPIFY_KEY);
+  const disk = onDisk(dir);
+  assert.ok(!disk.includes(KEY) && !disk.includes(GEOAPIFY_KEY) && !disk.includes(PASS));
+
+  const reopened = open(dir);
+  assert.deepStrictEqual(reopened.getStatus(), {
+    provider: 'gemini',
+    hasKey: false,
+    hasStoredKey: false,
+    searchProvider: 'geoapify',
+    hasSearchKey: false,
+    hasStoredSearchKey: true,
+  });
+  await reopened.unlockSearchKey(PASS);
+  assert.strictEqual(reopened.getApiKey('geoapify'), GEOAPIFY_KEY);
+  assert.deepStrictEqual(reopened.deleteSearchKey(), {
+    provider: 'gemini',
+    hasKey: false,
+    hasStoredKey: false,
+    searchProvider: 'geoapify',
+    hasSearchKey: false,
+    hasStoredSearchKey: false,
+  });
+  assert.strictEqual(reopened.getApiKey('gemini'), null);
 });
 
 test('el cifrado detecta que el archivo fue alterado', async () => {
