@@ -1,8 +1,13 @@
 const path = require('node:path');
+const fs = require('node:fs/promises');
 const { pathToFileURL } = require('node:url');
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const { createSettings, UserError } = require('../store/settings');
 const { planRequest } = require('../core/planner');
+const { createOsmProvider } = require('../core/osm');
+const { runPlan } = require('../core/runner');
+const { ALLOWED_COLUMNS, LIMITS } = require('../core/validator/contract');
+const { CSV_COLUMNS, outputColumns, serializeCsv } = require('../core/results');
 
 const RENDERER_DIR = path.join(__dirname, '../renderer');
 const RENDERER_URL = pathToFileURL(RENDERER_DIR + path.sep).href;
@@ -34,7 +39,7 @@ function handle(channel, fn) {
   ipcMain.handle(channel, async (event, arg) => {
     if (!isTrusted(event)) return { ok: false, message: 'Origen no permitido.' };
     try {
-      return await fn(arg);
+      return await fn(arg, event);
     } catch (err) {
       return { ok: false, message: err instanceof UserError ? err.message : 'Ocurrió un error inesperado.' };
     }
@@ -43,6 +48,8 @@ function handle(channel, fn) {
 
 app.whenReady().then(() => {
   const settings = createSettings({ dir: app.getPath('userData') });
+  const osmProvider = createOsmProvider();
+  let searchRunning = false;
   const withStatus = (status) => ({ ok: true, status });
 
   handle('settings:get', () => withStatus(settings.getStatus()));
@@ -59,6 +66,63 @@ app.whenReady().then(() => {
       return { ok: false, code: 'locked', message: 'La llave está guardada y bloqueada: desbloquéala con tu contraseña en Ajustes.' };
     }
     return planRequest({ request, provider, apiKey });
+  });
+
+  handle('search:run', async (plan, event) => {
+    if (searchRunning) {
+      return { ok: false, code: 'busy', message: 'Ya hay una búsqueda en curso. Espera a que termine antes de iniciar otra.' };
+    }
+    searchRunning = true;
+    try {
+      return await runPlan({
+        plan,
+        osmProvider,
+        onProgress: (progress) => {
+          if (!event.sender.isDestroyed()) event.sender.send('search:progress', progress);
+        },
+      });
+    } finally {
+      searchRunning = false;
+    }
+  });
+
+  handle('results:export-csv', async (input, event) => {
+    if (!input || !Array.isArray(input.columns) || !Array.isArray(input.rows)
+      || input.columns.some((column) => !CSV_COLUMNS.includes(column))
+      || input.rows.length > LIMITS.maxResults) {
+      return { ok: false, code: 'bad_request', message: 'Los resultados no tienen un formato válido para exportar.' };
+    }
+
+    let csv;
+    try {
+      const selectedColumns = input.columns.filter((column) => ALLOWED_COLUMNS.includes(column));
+      const columns = outputColumns(selectedColumns);
+      if (JSON.stringify(columns) !== JSON.stringify(input.columns)) {
+        return { ok: false, code: 'bad_request', message: 'El orden de las columnas de exportación no es válido.' };
+      }
+      csv = serializeCsv(input.rows, columns);
+    } catch (error) {
+      return { ok: false, code: 'bad_request', message: error.message };
+    }
+    const suggestedName = `segmenta-resultados-${new Date().toISOString().slice(0, 10)}.csv`;
+    const choice = await dialog.showSaveDialog(BrowserWindow.fromWebContents(event.sender), {
+      title: 'Guardar resultados como CSV',
+      defaultPath: path.join(app.getPath('documents'), suggestedName),
+      filters: [{ name: 'Archivo CSV', extensions: ['csv'] }],
+    });
+    if (choice.canceled || !choice.filePath) {
+      return { ok: false, code: 'cancelled', message: 'Exportación cancelada.' };
+    }
+    try {
+      await fs.writeFile(choice.filePath, csv, { encoding: 'utf8' });
+    } catch (error) {
+      return {
+        ok: false,
+        code: 'write_failed',
+        message: `No se pudo guardar el CSV: ${error.message}`,
+      };
+    }
+    return { ok: true, path: choice.filePath, rowCount: input.rows.length };
   });
 
   createWindow();

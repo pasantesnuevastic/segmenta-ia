@@ -1,0 +1,74 @@
+const { validatePlan } = require('./validator/validatePlan');
+const { OSMError, OSM_ATTRIBUTION } = require('./osm');
+const { normalizeResults } = require('./results');
+
+function fail(code, message, errors) {
+  return { ok: false, code, message, ...(errors && { errors }) };
+}
+
+async function runPlan({ plan: input, osmProvider, onProgress = () => {}, now = () => new Date() }) {
+  const validation = validatePlan(input);
+  if (!validation.ok) return fail('invalid_plan', 'El plan no cumple el contrato y no se ejecutó.', validation.errors);
+  if (!osmProvider || typeof osmProvider.search !== 'function') {
+    return fail('provider_error', 'El proveedor OpenStreetMap no está configurado.');
+  }
+
+  const plan = validation.plan;
+  const retrievedAt = now().toISOString();
+  const gathered = [];
+  const warnings = [...plan.warnings];
+  let duplicateCount = 0;
+
+  try {
+    for (let index = 0; index < plan.searches.length; index += 1) {
+      const search = plan.searches[index];
+      onProgress({ status: 'search_started', searchIndex: index + 1, totalSearches: plan.searches.length, ...search });
+      const result = await osmProvider.search({
+        ...search,
+        limit: Math.max(1, plan.max_results - normalizeResults(gathered, plan.columns).rows.length),
+        retrievedAt,
+        onStatus: (status) => onProgress({
+          status,
+          searchIndex: index + 1,
+          totalSearches: plan.searches.length,
+          ...search,
+        }),
+      });
+      warnings.push(...result.warnings);
+      gathered.push(...result.elements);
+
+      const normalized = normalizeResults(gathered, plan.columns);
+      duplicateCount = normalized.duplicateCount;
+      onProgress({
+        status: 'search_completed',
+        searchIndex: index + 1,
+        totalSearches: plan.searches.length,
+        resultCount: normalized.rows.length,
+        ...search,
+      });
+      if (normalized.rows.length >= plan.max_results) break;
+    }
+  } catch (error) {
+    if (!(error instanceof OSMError)) throw error;
+    onProgress({ status: 'failed', code: error.code, message: error.message });
+    return fail(error.code, error.message);
+  }
+
+  const normalized = normalizeResults(gathered, plan.columns);
+  duplicateCount = Math.max(duplicateCount, normalized.duplicateCount);
+  if (normalized.rows.length === 0) warnings.push('OpenStreetMap no devolvió resultados para esta consulta.');
+  onProgress({ status: 'completed', resultCount: normalized.rows.length, duplicateCount });
+  return {
+    ok: true,
+    source: 'OpenStreetMap',
+    attribution: OSM_ATTRIBUTION,
+    retrievedAt,
+    columns: normalized.columns,
+    rows: normalized.rows.slice(0, plan.max_results),
+    resultCount: Math.min(normalized.rows.length, plan.max_results),
+    duplicateCount,
+    warnings: [...new Set(warnings)],
+  };
+}
+
+module.exports = { runPlan };

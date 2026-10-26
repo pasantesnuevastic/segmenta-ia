@@ -23,8 +23,8 @@ La persona escribe, por ejemplo, «restaurantes de Neiva con teléfono y sitio w
 |---|---|
 | Plataforma Segmenta (proyecto aparte; se relaciona con esta aplicación solo mediante archivos CSV) | Existente |
 | Aplicación de escritorio (Electron, Windows) | En desarrollo |
-| Planificador con LLM, validador, ejecutor, depurador y generador de CSV | En desarrollo |
-| Fuente base: OpenStreetMap | En desarrollo |
+| Planificador con LLM y validador del plan | Implementados; planificador probado con respuestas simuladas |
+| Ejecución OpenStreetMap, depuración y exportación a CSV | Implementadas en el proceso principal y cubiertas por pruebas simuladas; la interfaz actual todavía no conecta estos pasos |
 | Fuente adicional: Google Places (requiere llave con facturación) | Propuesto |
 | Modelo local sin conexión | Propuesto |
 | ≤ 5 min del pedido al CSV (hasta 100 registros); 100 % de filas con fuente y fecha | Meta (por validar en un piloto) |
@@ -35,13 +35,47 @@ Requiere Node.js 22 o superior en Windows.
 
 ```bash
 npm install
-npm start      # abre la ventana (hoy: esqueleto con ajustes de proveedor y llave)
+npm start      # abre la ventana de desarrollo (la interfaz aún solo genera y muestra planes)
 npm test
 ```
 
-Hoy existen: el esqueleto de la ventana, los ajustes (proveedor de IA y llave de API, en memoria o cifrada con una contraseña), el contrato del plan con su validador y el planificador que pide el plan al modelo. El planificador está probado solo con respuestas simuladas, todavía no contra las API reales. La búsqueda, la depuración y el CSV siguen En desarrollo.
+La aplicación expone la búsqueda, el procesamiento y la exportación por IPC/preload para que la interfaz pueda conectarlos. Los proveedores de IA siguen probados con respuestas simuladas; la búsqueda tiene pruebas simuladas y requiere una prueba de aceptación contra los servicios públicos antes de la demostración.
 
-Estructura: `src/main` (proceso principal), `src/renderer` (interfaz), `src/core/validator` (contrato y validador del plan), `src/core/planner` (prompt, proveedores de IA y orquestación), `src/store` (ajustes y llave cifrada), `test/`.
+Estructura: `src/main` (proceso principal e IPC), `src/renderer` (interfaz), `src/core/validator` (contrato y validador del plan), `src/core/planner` (prompt, proveedores de IA y orquestación), `src/core/osm.js` (Nominatim y Overpass), `src/core/runner.js` (ejecución serial del plan), `src/core/results.js` (deduplicación y CSV), `src/store` (ajustes y llave cifrada), `test/`.
+
+## Contrato para integrar la interfaz
+
+`window.segmenta` ya incluye estas operaciones:
+
+- `createPlan(request)` → `{ ok: true, plan, usage, model }` o `{ ok: false, code, message, errors? }`. No ejecuta la búsqueda.
+- `executePlan(plan)` → `{ ok, code?, message?, source, retrievedAt, columns, rows, resultCount, duplicateCount, warnings }`. La entrada es el plan completo devuelto por `createPlan`; también se valida antes de ejecutar.
+- `onSearchProgress(listener)` → registra un listener y devuelve una función para cancelar la suscripción. Estados: `search_started`, `geocoding`, `querying`, `search_completed`, `failed`, `completed`. Los eventos incluyen `searchIndex`, `totalSearches` y, cuando aplica, `query`, `place`, `resultCount`, `code` y `message`.
+- `exportCsv({ columns, rows })` → `{ ok: true, path, rowCount }`, `{ ok: false, code: 'cancelled', message }` o un error con código y mensaje. Pasar `columns` y `rows` directamente desde la respuesta exitosa de `executePlan`; Electron abre el diálogo de guardado.
+
+Ejemplo de integración desde el renderer:
+
+```js
+const unsubscribe = window.segmenta.onSearchProgress((event) => {
+  // Mostrar event.status y event.searchIndex / event.totalSearches.
+});
+const planned = await window.segmenta.createPlan(requestText);
+if (planned.ok) {
+  const result = await window.segmenta.executePlan(planned.plan);
+  if (result.ok) {
+    const saved = await window.segmenta.exportCsv({ columns: result.columns, rows: result.rows });
+    if (saved.ok) console.log(saved.path);
+  }
+}
+unsubscribe();
+```
+
+Los códigos de error de ejecución incluyen `invalid_plan`, `unsupported_criteria`, `location_not_found`, `location_too_large`, `timeout`, `rate_limited`, `service_unavailable`, `network_error` e `invalid_response`; la interfaz debe mostrar `message`. Si ya hay una consulta activa, devuelve `busy`. La exportación puede devolver `cancelled`, `bad_request` o `write_failed`; también debe mostrar `message`. Por prudencia con el servicio público, se rechazan ubicaciones cuya caja geográfica exceda 0,5 grados en latitud o longitud. Una ejecución sin coincidencias es exitosa, con `rows: []`, `resultCount: 0` y un aviso.
+
+Las columnas CSV se escriben en este orden fijo: las columnas solicitadas según `ALLOWED_COLUMNS` (`name`, `address`, `phone`, `website`, `category`, `latitude`, `longitude`), seguidas de `source`, `source_url`, `retrieved_at`, `source_updated_at` y `attribution`. Se incluyen solo las columnas solicitadas y siempre los cinco campos de trazabilidad/licencia. La fecha ISO `retrieved_at` la asigna la aplicación; `source_updated_at` conserva la marca de actualización de OpenStreetMap y queda vacía si no está disponible. `attribution` contiene `© OpenStreetMap contributors (ODbL)`. Identificadores OSM se conservan en la respuesta de búsqueda (`osm_type`, `osm_id`) y se usan para deduplicar, pero no se agregan como columnas CSV.
+
+La deduplicación conserva la primera aparición: primero usa el identificador estable `tipo + ID` de OpenStreetMap; si falta, usa nombre y dirección normalizados (Unicode, tildes, mayúsculas y puntuación); si no hay dirección, usa nombre y teléfono. Si no hay una combinación suficiente, conserva la fila. Los campos ausentes se representan como celdas vacías.
+
+OpenStreetMap se consulta solo para categorías explícitamente mapeadas en `src/core/osm.js`; el resto de criterios se devuelve en `warnings` y no se convierte en una búsqueda libre. Overpass solo devuelve objetos con nombre, usa un límite de ejecución de 25 segundos y la aplicación conserva hasta el máximo permitido por el plan. Las solicitudes se hacen una a una; Nominatim usa un `User-Agent` identificable, caché en memoria y un intervalo mínimo de un segundo. Los endpoints pueden sustituirse mediante `SEGMENTA_NOMINATIM_URL` y `SEGMENTA_OVERPASS_URL`. La aplicación atribuye los datos a OpenStreetMap (© colaboradores de OpenStreetMap, ODbL). Verificar las políticas antes de un piloto: [Nominatim Usage Policy](https://operations.osmfoundation.org/policies/nominatim/) y [Overpass API Commons](https://dev.overpass-api.de/overpass-doc/en/preface/commons.html). El control de frecuencia local no limita el tráfico agregado de todas las copias; para un piloto con varias personas, configurar un proxy/proveedor propio o un servicio con capacidad y políticas adecuadas.
 
 ## Datos y privacidad
 
