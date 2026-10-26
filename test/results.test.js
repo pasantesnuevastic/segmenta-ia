@@ -152,3 +152,64 @@ test('devuelve al integrador el error de proveedor y notifica progreso fallido',
   });
   assert.equal(progress.at(-1).status, 'failed');
 });
+
+test('si falla una zona, continúa en serie con la siguiente y conserva sus resultados', async () => {
+  const calls = [];
+  const progress = [];
+  const result = await runPlan({
+    plan: {
+      ...plan,
+      searches: [
+        { query: 'parqueaderos', place: 'Centro, Neiva' },
+        { query: 'parqueaderos', place: 'Norte, Neiva' },
+      ],
+    },
+    onProgress: (event) => progress.push(event),
+    osmProvider: {
+      async search({ place }) {
+        calls.push(place);
+        if (place.startsWith('Centro')) {
+          throw new OSMError('service_unavailable', 'Overpass no está disponible por ahora.');
+        }
+        return { elements: [record()], warnings: [] };
+      },
+    },
+  });
+
+  assert.deepEqual(calls, ['Centro, Neiva', 'Norte, Neiva']);
+  assert.equal(result.ok, true);
+  assert.equal(result.resultCount, 1);
+  assert.equal(result.failedSearchCount, 1);
+  assert.ok(result.warnings.some((warning) => warning.includes('Centro, Neiva')));
+  assert.ok(progress.some((event) => event.status === 'search_failed' && event.place === 'Centro, Neiva'));
+  assert.equal(progress.at(-1).status, 'completed');
+});
+
+test('si todas las zonas fallan, devuelve errores identificables para cada una', async () => {
+  const calls = [];
+  const progress = [];
+  const result = await runPlan({
+    plan: {
+      ...plan,
+      searches: [
+        { query: 'parqueaderos', place: 'Centro, Neiva' },
+        { query: 'parqueaderos', place: 'Norte, Neiva' },
+      ],
+    },
+    onProgress: (event) => progress.push(event),
+    osmProvider: {
+      async search({ place }) {
+        calls.push(place);
+        throw new OSMError('service_unavailable', 'Overpass no está disponible por ahora.');
+      },
+    },
+  });
+
+  assert.deepEqual(calls, ['Centro, Neiva', 'Norte, Neiva']);
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'service_unavailable');
+  assert.match(result.message, /Centro, Neiva/);
+  assert.match(result.message, /Norte, Neiva/);
+  assert.equal(progress.at(-1).status, 'failed');
+  assert.equal(progress.at(-1).failedSearches.length, 2);
+});

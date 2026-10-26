@@ -45,8 +45,12 @@ const PROGRESS_MESSAGES = {
   geocoding: (event) => `Resolviendo ubicación: ${event.place}…`,
   querying: () => 'Consultando OpenStreetMap…',
   search_completed: (event) => `Búsqueda ${event.searchIndex} de ${event.totalSearches} terminada; ${event.resultCount} resultado(s) acumulado(s).`,
+  search_failed: (event) => `No se pudo consultar la zona ${event.searchIndex} de ${event.totalSearches} (${event.place}): ${event.message} Se continuará con las demás zonas del plan.`,
   failed: (event) => event.message,
-  completed: (event) => `Consulta terminada: ${event.resultCount} resultado(s), ${event.duplicateCount} duplicado(s) eliminado(s).`,
+  completed: (event) => {
+    const failures = event.failedSearchCount ? ` ${event.failedSearchCount} zona(s) no se pudieron consultar.` : '';
+    return `Consulta terminada: ${event.resultCount} resultado(s), ${event.duplicateCount} duplicado(s) eliminado(s).${failures}`;
+  },
 };
 
 function progressMessage(event) {
