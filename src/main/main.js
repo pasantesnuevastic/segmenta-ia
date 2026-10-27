@@ -2,7 +2,7 @@ const path = require('node:path');
 const fsSync = require('node:fs');
 const fs = require('node:fs/promises');
 const { pathToFileURL } = require('node:url');
-const { app, BrowserWindow, dialog, ipcMain } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
 const { createSettings, UserError } = require('../store/settings');
 const { planRequest } = require('../core/planner');
 const { createOsmProvider } = require('../core/osm');
@@ -19,6 +19,8 @@ function createWindow() {
     width: 960,
     height: 680,
     title: 'Segmenta IA',
+    icon: path.join(__dirname, '../../assets', process.platform === 'win32' ? 'icon.ico' : 'icon.png'),
+    backgroundColor: '#f5f7fb',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -59,6 +61,8 @@ app.whenReady().then(() => {
     resolveLocation: locationProvider.resolveLocation,
   });
   let searchRunning = false;
+  // Último CSV guardado: la interfaz solo puede pedir abrir este archivo, nunca una ruta arbitraria.
+  let lastExportPath = null;
   const withStatus = (status) => ({ ok: true, status });
 
   handle('settings:get', () => withStatus(settings.getStatus()));
@@ -130,7 +134,20 @@ app.whenReady().then(() => {
         message: `No se pudo guardar el CSV: ${error.message}`,
       };
     }
+    lastExportPath = choice.filePath;
     return { ok: true, path: choice.filePath, rowCount: input.rows.length };
+  });
+
+  handle('results:open-csv', async () => {
+    if (!lastExportPath) return { ok: false, message: 'Primero guarda el CSV.' };
+    const error = await shell.openPath(lastExportPath);
+    return error ? { ok: false, message: `No se pudo abrir el CSV: ${error}` } : { ok: true };
+  });
+
+  handle('results:show-folder', () => {
+    if (!lastExportPath) return { ok: false, message: 'Primero guarda el CSV.' };
+    shell.showItemInFolder(lastExportPath);
+    return { ok: true };
   });
 
   createWindow();
