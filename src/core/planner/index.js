@@ -2,6 +2,7 @@ const { LIMITS } = require('../validator/contract');
 const { validatePlan } = require('../validator/validatePlan');
 const { buildMessages } = require('./prompt');
 const { PROVIDERS, DEFAULT_MODELS, ProviderError } = require('./providers');
+const { resolvePlanActivities } = require('../activities');
 
 const fail = (code, message, errors) => ({ ok: false, code, message, ...(errors && { errors }) });
 
@@ -40,9 +41,17 @@ async function planRequest({ request, provider, apiKey, model, fetchImpl = fetch
     return fail('invalid_plan', 'El plan del modelo no cumple las reglas y se descartó. Intenta reformular el pedido.', result.errors);
   }
   if (result.plan.searches.length === 0) {
+    if (result.plan.unknown_terms.length) {
+      return fail(
+        'unsupported_activity',
+        `No hay una búsqueda configurada para «${result.plan.unknown_terms.join(', ')}». Prueba con otra actividad del catálogo o reformula el pedido.`,
+      );
+    }
     return fail('out_of_scope', 'No pude identificar una solicitud de búsqueda de negocios. Describe qué tipo de negocio quieres consultar y en qué ubicación.');
   }
-  return { ok: true, plan: result.plan, usage: answer.usage, model: usedModel };
+  const resolved = resolvePlanActivities(result.plan);
+  if (!resolved.ok) return fail(resolved.code, resolved.message);
+  return { ok: true, plan: resolved.plan, usage: answer.usage, model: usedModel };
 }
 
 module.exports = { planRequest };

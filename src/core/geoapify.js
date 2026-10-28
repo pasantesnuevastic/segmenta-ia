@@ -1,35 +1,10 @@
-const { OSMError, OSM_ATTRIBUTION, translateCriteria } = require('./osm');
+const { OSMError, OSM_ATTRIBUTION } = require('./osm');
+const { resolveActivity } = require('./activities');
 
 const GEOAPIFY_DEFAULT_URL = 'https://api.geoapify.com/v2/places';
 const GEOAPIFY_TIMEOUT_MS = 30000;
 const GEOAPIFY_PAGE_SIZE = 500;
 const GEOAPIFY_ATTRIBUTION = `Powered by Geoapify; ${OSM_ATTRIBUTION}`;
-
-const GEOAPIFY_CATEGORIES = {
-  'amenity:restaurant': 'catering.restaurant',
-  'amenity:parking': 'parking',
-  'amenity:cafe': 'catering.cafe',
-  'amenity:bar': 'catering.bar',
-  'shop:bakery': 'commercial.food_and_drink.bakery',
-  'shop:supermarket': 'commercial.supermarket',
-  'amenity:pharmacy': 'commercial.health_and_beauty.pharmacy',
-  'tourism:hotel': 'accommodation.hotel',
-  'amenity:bank': 'service.financial.bank',
-  'amenity:fuel': 'service.vehicle.fuel',
-  'shop:clothes': 'commercial.clothing',
-  'shop:hardware': 'commercial.houseware_and_hardware.hardware_and_tools',
-  'shop:books': 'commercial.books',
-  'shop:hairdresser': 'service.beauty.hairdresser',
-  'amenity:dentist': 'healthcare.clinic_or_praxis',
-  'amenity:hospital': 'healthcare',
-  'amenity:clinic': 'healthcare.clinic_or_praxis',
-  'amenity:school': 'education.school',
-};
-
-const BROAD_CATEGORY_WARNINGS = {
-  'amenity:dentist': 'Geoapify agrupa dentistas con consultorios médicos; puede incluir otros profesionales de salud.',
-  'amenity:hospital': 'Geoapify solo ofrece una categoría general de salud; los resultados pueden incluir clínicas y otros servicios médicos.',
-};
 
 function requestUrl(endpoint, bounds, categories, limit, offset) {
   const url = new URL(endpoint);
@@ -75,7 +50,7 @@ async function readGeoapifyJson(fetchImpl, url, apiKey) {
   }
 }
 
-function featureToElement(feature, retrievedAt, requestedCategories) {
+function featureToElement(feature, retrievedAt, activity) {
   const properties = feature?.properties ?? {};
   const raw = properties.datasource?.raw ?? {};
   const coordinates = feature?.geometry?.coordinates ?? [];
@@ -103,7 +78,7 @@ function featureToElement(feature, retrievedAt, requestedCategories) {
     address: properties.address_line2 ?? streetAddress,
     phone: raw.phone ?? raw['contact:phone'] ?? properties.contact?.phone ?? properties.phone ?? '',
     website: raw.website ?? raw['contact:website'] ?? properties.website ?? '',
-    category: rawCategory ? raw[rawCategory] : requestedCategories[0] ?? '',
+    category: rawCategory ? raw[rawCategory] : activity.name,
     ...(Number.isFinite(latitude) && { latitude }),
     ...(Number.isFinite(longitude) && { longitude }),
     source: 'Geoapify',
@@ -113,6 +88,7 @@ function featureToElement(feature, retrievedAt, requestedCategories) {
     attribution: GEOAPIFY_ATTRIBUTION,
     osm_type: hasOsmId ? osmType : '',
     osm_id: hasOsmId ? osmId : '',
+    geoapify_place_id: properties.place_id ?? '',
   };
 }
 
@@ -122,7 +98,7 @@ function createGeoapifyProvider({
   fetchImpl = fetch,
   endpoint = process.env.SEGMENTA_GEOAPIFY_URL || GEOAPIFY_DEFAULT_URL,
 } = {}) {
-  async function search({ query, place, limit, retrievedAt, onStatus = () => {} }) {
+  async function search({ query, place, specialty = '', limit, retrievedAt, onStatus = () => {} }) {
     if (typeof apiKey !== 'string' || !apiKey.trim()) {
       throw new OSMError('no_key', 'Falta la llave de Geoapify. Configura GEOAPIFY_API_KEY en el archivo .env y reinicia la aplicación.');
     }
@@ -133,18 +109,13 @@ function createGeoapifyProvider({
       throw new OSMError('bad_request', 'El límite de resultados debe ser un entero entre 1 y 1000.');
     }
 
-    const translated = translateCriteria(query, place);
-    const categories = [...new Set(translated.categories
-      .map(({ key, value }) => GEOAPIFY_CATEGORIES[`${key}:${value}`])
-      .filter(Boolean))];
-    const unsupportedTerms = [...translated.unsupportedTerms];
-    for (const category of translated.categories) {
-      if (!GEOAPIFY_CATEGORIES[`${category.key}:${category.value}`]) {
-        unsupportedTerms.push(`${category.key}=${category.value}`);
-      }
+    const activity = resolveActivity(query);
+    if (!activity) {
+      throw new OSMError('unsupported_criteria', `«${query}» no corresponde a una actividad del catálogo aprobado.`);
     }
+    const categories = [...new Set(activity.geoapify_categories)];
     if (!categories.length) {
-      throw new OSMError('unsupported_criteria', `No se encontraron criterios compatibles con Geoapify en «${query}».`);
+      throw new OSMError('unsupported_criteria', `«${activity.name}» no tiene una categoría específica disponible en Geoapify.`);
     }
 
     onStatus('geocoding');
@@ -152,12 +123,11 @@ function createGeoapifyProvider({
     onStatus('querying');
     const rows = [];
     const warnings = [];
-    if (unsupportedTerms.length) {
-      warnings.push(`Criterios no traducidos a Geoapify: ${[...new Set(unsupportedTerms)].join(', ')}.`);
+    if (specialty.trim()) {
+      warnings.push(`Se solicitó el subtipo «${specialty.trim()}» de «${activity.name}», pero Geoapify no puede filtrarlo con precisión; los resultados pueden incluir otros tipos de la actividad.`);
     }
-    for (const category of translated.categories) {
-      const categoryWarning = BROAD_CATEGORY_WARNINGS[`${category.key}:${category.value}`];
-      if (categoryWarning) warnings.push(categoryWarning);
+    if (activity.precision === 'Amplia') {
+      warnings.push(`La categoría Geoapify de «${activity.name}» es amplia; los resultados pueden incluir actividades relacionadas. ${activity.search_guidance}`);
     }
     const total = limit;
     const pageSize = Math.min(GEOAPIFY_PAGE_SIZE, total);
@@ -170,9 +140,7 @@ function createGeoapifyProvider({
         throw new OSMError('invalid_response', 'Geoapify devolvió una respuesta sin una lista de lugares válida.');
       }
 
-      rows.push(...response.features.map((feature) =>
-        featureToElement(feature, retrievedAt, translated.categories.map(({ value }) => value)),
-      ));
+      rows.push(...response.features.map((feature) => featureToElement(feature, retrievedAt, activity)));
       if (response.features.length < requested) break;
     }
 
@@ -194,6 +162,5 @@ module.exports = {
   GEOAPIFY_ATTRIBUTION,
   GEOAPIFY_TIMEOUT_MS,
   GEOAPIFY_PAGE_SIZE,
-  GEOAPIFY_CATEGORIES,
   featureToElement,
 };

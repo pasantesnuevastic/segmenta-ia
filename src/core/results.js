@@ -13,6 +13,7 @@ function canonical(value) {
 }
 
 function deduplicationKey(row) {
+  if (row.geoapify_place_id) return `geoapify:${row.geoapify_place_id}`;
   if (row.osm_type && row.osm_id !== '' && row.osm_id !== null && row.osm_id !== undefined) {
     return `osm:${row.osm_type}:${row.osm_id}`;
   }

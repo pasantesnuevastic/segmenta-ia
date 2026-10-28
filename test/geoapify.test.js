@@ -79,6 +79,7 @@ test('consulta Geoapify por categoría y área; conserva procedencia, coordenada
     attribution: GEOAPIFY_ATTRIBUTION,
     osm_type: 'way',
     osm_id: 456,
+    geoapify_place_id: 'stable-geo-id',
   });
 });
 
@@ -151,6 +152,89 @@ test('acepta respuesta sin coincidencias y marca registros sin identificador OSM
   assert.equal(result.elements[0].source_url, '');
   assert.equal(result.elements[0].source_updated_at, '');
   assert.equal(result.elements[0].attribution, GEOAPIFY_ATTRIBUTION);
+});
+
+test('consulta todas las categorías relacionadas en una sola búsqueda Geoapify', async () => {
+  let requestedCategories;
+  const provider = createGeoapifyProvider({
+    apiKey: 'geoapify-test-key',
+    resolveLocation: async () => bounds,
+    endpoint: 'https://geoapify.test/v2/places',
+    fetchImpl: async (url) => {
+      requestedCategories = new URL(url).searchParams.get('categories');
+      return response({ type: 'FeatureCollection', features: [] });
+    },
+  });
+
+  const result = await provider.search({
+    query: 'tienda de mascotas',
+    place: 'Neiva',
+    limit: 10,
+    retrievedAt: '2026-10-26T21:00:00.000Z',
+  });
+
+  assert.equal(requestedCategories, 'commercial.pet,pet.shop');
+  assert.equal(result.warnings.length, 0);
+});
+
+test('advierte cuando la categoría de una actividad es amplia', async () => {
+  const provider = createGeoapifyProvider({
+    apiKey: 'geoapify-test-key',
+    resolveLocation: async () => bounds,
+    fetchImpl: async () => response({ type: 'FeatureCollection', features: [] }),
+  });
+
+  const result = await provider.search({
+    query: 'restaurante típico huilense',
+    place: 'Neiva',
+    limit: 10,
+    retrievedAt: '2026-10-26T21:00:00.000Z',
+  });
+
+  assert.equal(result.warnings.length, 1);
+  assert.match(result.warnings[0], /categoría Geoapify.*es amplia/i);
+});
+
+test('advierte que una especialidad solicitada no se puede filtrar', async () => {
+  const provider = createGeoapifyProvider({
+    apiKey: 'geoapify-test-key',
+    resolveLocation: async () => bounds,
+    fetchImpl: async () => response({ type: 'FeatureCollection', features: [] }),
+  });
+
+  const result = await provider.search({
+    query: 'Restaurantes',
+    specialty: 'italianos',
+    place: 'Neiva',
+    limit: 10,
+    retrievedAt: '2026-10-26T21:00:00.000Z',
+  });
+
+  assert.ok(result.warnings.some((warning) => warning.includes('italianos')));
+  assert.ok(result.warnings.some((warning) => warning.includes('no puede filtrarlo con precisión')));
+});
+
+test('no inventa una categoría para una actividad sin filtro específico', async () => {
+  let calls = 0;
+  const provider = createGeoapifyProvider({
+    apiKey: 'geoapify-test-key',
+    resolveLocation: async () => bounds,
+    fetchImpl: async () => {
+      calls += 1;
+      return response({ type: 'FeatureCollection', features: [] });
+    },
+  });
+
+  await assert.rejects(
+    provider.search({
+      query: 'reparación de celulares',
+      place: 'Neiva',
+      limit: 10,
+      retrievedAt: '2026-10-26T21:00:00.000Z',
+    }),
+    (error) => error instanceof OSMError && error.code === 'unsupported_criteria',
+  );
+  assert.equal(calls, 0);
 });
 
 test('pagina en serie hasta el límite solicitado sin exceder 500 resultados por llamada', async () => {

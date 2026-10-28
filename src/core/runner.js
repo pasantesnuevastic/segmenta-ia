@@ -1,6 +1,7 @@
 const { validatePlan } = require('./validator/validatePlan');
 const { OSMError, OSM_ATTRIBUTION } = require('./osm');
 const { normalizeResults } = require('./results');
+const { resolvePlanActivities } = require('./activities');
 const DEFAULT_SOURCE = 'OpenStreetMap';
 
 function fail(code, message, errors) {
@@ -14,7 +15,9 @@ async function runPlan({ plan: input, osmProvider, onProgress = () => {}, now = 
     return fail('provider_error', 'El proveedor de lugares no está configurado.');
   }
 
-  const plan = validation.plan;
+  const activityResolution = resolvePlanActivities(validation.plan);
+  if (!activityResolution.ok) return fail(activityResolution.code, activityResolution.message);
+  const plan = activityResolution.plan;
   const retrievedAt = now().toISOString();
   const gathered = [];
   const warnings = [...plan.warnings];

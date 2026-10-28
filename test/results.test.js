@@ -8,10 +8,10 @@ const { runPlan } = require('../src/core/runner');
 const { deduplicateResults, normalizeResults, serializeCsv } = require('../src/core/results');
 
 const plan = {
-  schema_version: '1.0',
+  schema_version: '1.1',
   searches: [
-    { query: 'restaurantes', place: 'Neiva, Huila' },
-    { query: 'cafeterias', place: 'Neiva, Huila' },
+    { query: 'restaurantes', place: 'Neiva, Huila', specialty: '' },
+    { query: 'cafeterias', place: 'Neiva, Huila', specialty: '' },
   ],
   columns: ['name', 'address', 'phone', 'website'],
   max_results: 100,
@@ -50,6 +50,15 @@ test('elimina duplicados por ID OSM y por nombre/dirección normalizados, sin ca
   assert.equal(unique.length, 3);
   assert.equal(unique[0].name, rows[0].name);
   assert.equal(unique[1].osm_id, 2);
+});
+
+test('deduplica por identificador estable de Geoapify cuando no hay ID de OSM', () => {
+  const rows = [
+    record({ osm_id: '', osm_type: '', geoapify_place_id: 'geo-1', name: 'Lugar original' }),
+    record({ osm_id: '', osm_type: '', geoapify_place_id: 'geo-1', name: 'Nombre alternativo' }),
+    record({ osm_id: '', osm_type: '', geoapify_place_id: 'geo-2', name: 'Otro lugar' }),
+  ];
+  assert.deepEqual(deduplicateResults(rows).map((row) => row.name), ['Lugar original', 'Otro lugar']);
 });
 
 test('normaliza las columnas seleccionadas y mantiene fuente, fecha de extracción y actualización separadas', () => {
@@ -184,8 +193,8 @@ test('si falla una zona, continúa en serie con la siguiente y conserva sus resu
     plan: {
       ...plan,
       searches: [
-        { query: 'parqueaderos', place: 'Centro, Neiva' },
-        { query: 'parqueaderos', place: 'Norte, Neiva' },
+        { query: 'parqueaderos', place: 'Centro, Neiva', specialty: '' },
+        { query: 'parqueaderos', place: 'Norte, Neiva', specialty: '' },
       ],
     },
     onProgress: (event) => progress.push(event),
@@ -216,8 +225,8 @@ test('si todas las zonas fallan, devuelve errores identificables para cada una',
     plan: {
       ...plan,
       searches: [
-        { query: 'parqueaderos', place: 'Centro, Neiva' },
-        { query: 'parqueaderos', place: 'Norte, Neiva' },
+        { query: 'parqueaderos', place: 'Centro, Neiva', specialty: '' },
+        { query: 'parqueaderos', place: 'Norte, Neiva', specialty: '' },
       ],
     },
     onProgress: (event) => progress.push(event),

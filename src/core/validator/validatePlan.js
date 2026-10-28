@@ -1,7 +1,7 @@
 const { SCHEMA_VERSION, ALLOWED_COLUMNS, LIMITS } = require('./contract');
 
 const PLAN_KEYS = ['schema_version', 'searches', 'columns', 'max_results', 'explanation', 'warnings', 'unknown_terms'];
-const SEARCH_KEYS = ['query', 'place'];
+const SEARCH_KEYS = ['query', 'place', 'specialty'];
 const CONTROL_CHARS = /[\u0000-\u001f\u007f]/;
 
 const isObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -20,6 +20,21 @@ function checkText(value, max, where, errors) {
   const text = value.trim();
   if (!text) errors.push(`${where}: no puede estar vacío`);
   else if (text.length > max) errors.push(`${where}: supera ${max} caracteres`);
+  else if (CONTROL_CHARS.test(text)) errors.push(`${where}: contiene caracteres de control`);
+  return text;
+}
+
+function checkOptionalText(value, max, where, errors) {
+  if (value === undefined) {
+    errors.push(`${where}: debe ser texto`);
+    return '';
+  }
+  if (typeof value !== 'string') {
+    errors.push(`${where}: debe ser texto`);
+    return '';
+  }
+  const text = value.trim();
+  if (text.length > max) errors.push(`${where}: supera ${max} caracteres`);
   else if (CONTROL_CHARS.test(text)) errors.push(`${where}: contiene caracteres de control`);
   return text;
 }
@@ -55,6 +70,7 @@ function validatePlan(input, { allowEmptySearches = false } = {}) {
       searches.push({
         query: checkText(s.query, LIMITS.maxTextLength, `searches[${i}].query`, errors),
         place: checkText(s.place, LIMITS.maxTextLength, `searches[${i}].place`, errors),
+        specialty: checkOptionalText(s.specialty, LIMITS.maxTextLength, `searches[${i}].specialty`, errors),
       });
     });
   }

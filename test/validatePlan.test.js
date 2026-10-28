@@ -4,8 +4,8 @@ const { validatePlan } = require('../src/core/validator/validatePlan');
 const { LIMITS, ALLOWED_COLUMNS } = require('../src/core/validator/contract');
 
 const valid = () => ({
-  schema_version: '1.0',
-  searches: [{ query: 'restaurantes', place: 'Neiva, Huila' }],
+  schema_version: '1.1',
+  searches: [{ query: 'restaurantes', place: 'Neiva, Huila', specialty: '' }],
   columns: ['name', 'address', 'phone', 'website'],
   max_results: 100,
   explanation: 'Restaurantes de Neiva con teléfono y sitio web.',
@@ -100,4 +100,14 @@ test('límites de textos y listas de avisos', () => {
   rejects((p) => { p.explanation = 'x'.repeat(LIMITS.maxExplanationLength + 1); }, 'explanation');
   rejects((p) => { p.warnings = Array(LIMITS.maxNotes + 1).fill('a'); }, 'warnings: supera');
   rejects((p) => { p.unknown_terms = 'no es lista'; }, 'unknown_terms');
+});
+
+test('exige una especialidad textual, aunque puede quedar vacía', () => {
+  const plan = valid();
+  plan.searches[0].specialty = '';
+  assert.equal(validatePlan(plan).ok, true);
+
+  rejects((p) => { p.searches[0].specialty = 42; }, 'specialty: debe ser texto');
+  rejects((p) => { p.searches[0].specialty = 'x'.repeat(LIMITS.maxTextLength + 1); }, 'specialty: supera');
+  rejects((p) => { delete p.searches[0].specialty; }, 'specialty: debe ser texto');
 });
