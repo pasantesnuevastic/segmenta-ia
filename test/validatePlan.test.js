@@ -4,8 +4,8 @@ const { validatePlan } = require('../src/core/validator/validatePlan');
 const { LIMITS, ALLOWED_COLUMNS } = require('../src/core/validator/contract');
 
 const valid = () => ({
-  schema_version: '1.0',
-  searches: [{ query: 'restaurantes', place: 'Neiva, Huila' }],
+  schema_version: '1.1',
+  searches: [{ query: 'restaurantes', place: 'Neiva, Huila', specialty: '' }],
   columns: ['name', 'address', 'phone', 'website'],
   max_results: 100,
   explanation: 'Restaurantes de Neiva con teléfono y sitio web.',
@@ -79,10 +79,35 @@ test('max_results: entero entre 1 y el tope', () => {
   rejects((p) => { p.max_results = 0; }, 'max_results');
   rejects((p) => { p.max_results = 10.5; }, 'max_results');
   rejects((p) => { p.max_results = '50'; }, 'max_results');
+  const minimum = valid();
+  minimum.max_results = 1;
+  assert.equal(validatePlan(minimum).ok, true);
+  const maximum = valid();
+  maximum.max_results = 1000;
+  assert.equal(validatePlan(maximum).ok, true);
+});
+
+test('solo el planificador puede validar un plan sin búsquedas para informar fuera de alcance', () => {
+  const plan = valid();
+  plan.searches = [];
+  assert.equal(validatePlan(plan).ok, false);
+  const classification = validatePlan(plan, { allowEmptySearches: true });
+  assert.equal(classification.ok, true);
+  assert.deepStrictEqual(classification.plan.searches, []);
 });
 
 test('límites de textos y listas de avisos', () => {
   rejects((p) => { p.explanation = 'x'.repeat(LIMITS.maxExplanationLength + 1); }, 'explanation');
   rejects((p) => { p.warnings = Array(LIMITS.maxNotes + 1).fill('a'); }, 'warnings: supera');
   rejects((p) => { p.unknown_terms = 'no es lista'; }, 'unknown_terms');
+});
+
+test('exige una especialidad textual, aunque puede quedar vacía', () => {
+  const plan = valid();
+  plan.searches[0].specialty = '';
+  assert.equal(validatePlan(plan).ok, true);
+
+  rejects((p) => { p.searches[0].specialty = 42; }, 'specialty: debe ser texto');
+  rejects((p) => { p.searches[0].specialty = 'x'.repeat(LIMITS.maxTextLength + 1); }, 'specialty: supera');
+  rejects((p) => { delete p.searches[0].specialty; }, 'specialty: debe ser texto');
 });

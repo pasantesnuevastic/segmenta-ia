@@ -1,7 +1,7 @@
 const { SCHEMA_VERSION, ALLOWED_COLUMNS, LIMITS } = require('./contract');
 
 const PLAN_KEYS = ['schema_version', 'searches', 'columns', 'max_results', 'explanation', 'warnings', 'unknown_terms'];
-const SEARCH_KEYS = ['query', 'place'];
+const SEARCH_KEYS = ['query', 'place', 'specialty'];
 const CONTROL_CHARS = /[\u0000-\u001f\u007f]/;
 
 const isObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -24,6 +24,21 @@ function checkText(value, max, where, errors) {
   return text;
 }
 
+function checkOptionalText(value, max, where, errors) {
+  if (value === undefined) {
+    errors.push(`${where}: debe ser texto`);
+    return '';
+  }
+  if (typeof value !== 'string') {
+    errors.push(`${where}: debe ser texto`);
+    return '';
+  }
+  const text = value.trim();
+  if (text.length > max) errors.push(`${where}: supera ${max} caracteres`);
+  else if (CONTROL_CHARS.test(text)) errors.push(`${where}: contiene caracteres de control`);
+  return text;
+}
+
 function checkNotes(value, where, errors) {
   if (value === undefined) return [];
   if (!Array.isArray(value)) {
@@ -36,7 +51,7 @@ function checkNotes(value, where, errors) {
 
 // Valida un plan ya convertido a objeto. Rechaza (no recorta) todo lo que no cumple el contrato.
 // Devuelve { ok: true, plan } con el plan normalizado, o { ok: false, errors }.
-function validatePlan(input) {
+function validatePlan(input, { allowEmptySearches = false } = {}) {
   const errors = [];
   if (!isObject(input)) return { ok: false, errors: ['El plan debe ser un objeto JSON'] };
 
@@ -47,7 +62,7 @@ function validatePlan(input) {
   if (!Array.isArray(input.searches)) {
     errors.push('searches: debe ser una lista');
   } else {
-    if (input.searches.length < 1) errors.push('searches: debe tener al menos una búsqueda');
+    if (!allowEmptySearches && input.searches.length < 1) errors.push('searches: debe tener al menos una búsqueda');
     if (input.searches.length > LIMITS.maxSearches) errors.push(`searches: supera ${LIMITS.maxSearches} búsquedas`);
     input.searches.forEach((s, i) => {
       if (!isObject(s)) return errors.push(`searches[${i}]: debe ser un objeto`);
@@ -55,6 +70,7 @@ function validatePlan(input) {
       searches.push({
         query: checkText(s.query, LIMITS.maxTextLength, `searches[${i}].query`, errors),
         place: checkText(s.place, LIMITS.maxTextLength, `searches[${i}].place`, errors),
+        specialty: checkOptionalText(s.specialty, LIMITS.maxTextLength, `searches[${i}].specialty`, errors),
       });
     });
   }

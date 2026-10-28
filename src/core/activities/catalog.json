@@ -1,0 +1,2157 @@
+{
+  "source": "Catalogo_actividades_Neiva_Huila_Colombia.xlsx",
+  "reviewed_at": "2026-10-28",
+  "categories_reference": "https://apidocs.geoapify.com/docs/places/",
+  "activities": [
+    {
+      "id": 1,
+      "name": "Restaurantes",
+      "priority": 1,
+      "geoapify_categories": [
+        "catering.restaurant"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "restaurante",
+        "restaurantes",
+        "restaurant",
+        "restaurants"
+      ],
+      "specialty_notes": "Restaurante típico, ejecutivo, vegetariano: conservar especialidad.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "catering.restaurant",
+      "declared_status": "Actual"
+    },
+    {
+      "id": 2,
+      "name": "Comida rápida",
+      "priority": 1,
+      "geoapify_categories": [
+        "catering.fast_food"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "comida rápida",
+        "comidas rápidas",
+        "fast food"
+      ],
+      "specialty_notes": "Perros calientes, salchipapas, empanadas y arepas: clasificar según oferta.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "catering.fast_food",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 3,
+      "name": "Cafeterías",
+      "priority": 1,
+      "geoapify_categories": [
+        "catering.cafe"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "cafetería",
+        "cafeterías",
+        "coffee shop"
+      ],
+      "specialty_notes": "Café puede ser bebida, tienda de grano o cafetería.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "No convertir la palabra café aislada automáticamente en cafetería.",
+      "original_category": "catering.cafe",
+      "declared_status": "Actual"
+    },
+    {
+      "id": 4,
+      "name": "Bares",
+      "priority": 1,
+      "geoapify_categories": [
+        "catering.bar"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "bar",
+        "bares"
+      ],
+      "specialty_notes": "Gastrobar y bar-restaurante: actividad combinada.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "catering.bar",
+      "declared_status": "Actual"
+    },
+    {
+      "id": 5,
+      "name": "Pubs",
+      "priority": 3,
+      "geoapify_categories": [
+        "catering.pub"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "pub",
+        "pubs"
+      ],
+      "specialty_notes": "Cervecería puede indicar bar o producción de cerveza.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "catering.pub",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 6,
+      "name": "Heladerías",
+      "priority": 1,
+      "geoapify_categories": [
+        "catering.ice_cream",
+        "catering.cafe.ice_cream"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "heladería",
+        "heladerías",
+        "tienda de helados"
+      ],
+      "specialty_notes": "Paletería; gelatería.",
+      "table_adjustment": "Corregir o precisar",
+      "search_guidance": "Consultar ambas categorías como unión y deduplicar establecimientos.",
+      "original_category": "catering.ice_cream",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 7,
+      "name": "Panaderías",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.food_and_drink.bakery"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "panadería",
+        "panaderías",
+        "bakery"
+      ],
+      "specialty_notes": "Panificadora: comprobar venta al público o fabricación.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "commercial.food_and_drink.bakery",
+      "declared_status": "Actual"
+    },
+    {
+      "id": 8,
+      "name": "Carnicerías",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.food_and_drink.butcher"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "carnicería",
+        "carnicerías",
+        "expendio de carnes",
+        "fama de carnes",
+        "butcher"
+      ],
+      "specialty_notes": "Avícola y venta de pollo crudo: especialidad comercial.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "commercial.food_and_drink.butcher",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 9,
+      "name": "Fruterías y verdulerías",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.food_and_drink.fruit_and_vegetable"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "frutería",
+        "fruterías",
+        "verdulería",
+        "tienda de frutas y verduras"
+      ],
+      "specialty_notes": "Revueltería: confirmar surtido; frutería de ensaladas preparadas requiere otra clasificación.",
+      "table_adjustment": "Corregir o precisar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "commercial.food_and_drink.greengrocer",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 10,
+      "name": "Supermercados",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.supermarket"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "supermercado",
+        "supermercados",
+        "autoservicio de alimentos"
+      ],
+      "specialty_notes": "Súper y autoservicio aislados necesitan contexto.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "commercial.supermarket",
+      "declared_status": "Actual"
+    },
+    {
+      "id": 11,
+      "name": "Tiendas de barrio y minimercados",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.convenience"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "tienda de barrio",
+        "tienda de conveniencia",
+        "minimercado",
+        "mini mercado",
+        "minimarket"
+      ],
+      "specialty_notes": "Tienda, granero y abarrotes: comprobar escala y surtido.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "commercial.convenience",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 12,
+      "name": "Farmacias y droguerías",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.health_and_beauty.pharmacy",
+        "healthcare.pharmacy"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "farmacia",
+        "farmacias",
+        "droguería",
+        "droguerías"
+      ],
+      "specialty_notes": "Droguería veterinaria: consultar sector agropecuario o veterinario.",
+      "table_adjustment": "Corregir o precisar",
+      "search_guidance": "Ambas claves están documentadas; unir resultados sin duplicarlos.",
+      "original_category": "commercial.health_and_beauty.pharmacy",
+      "declared_status": "Actual"
+    },
+    {
+      "id": 13,
+      "name": "Tiendas de ropa",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.clothing.clothes"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "tienda de ropa",
+        "almacén de ropa",
+        "boutique de ropa",
+        "clothing store"
+      ],
+      "specialty_notes": "Ropa, moda, prendas deportivas y ropa infantil: conservar especialidad.",
+      "table_adjustment": "Corregir o precisar",
+      "search_guidance": "Precisar a venta de prendas. La categoría original commercial.clothing también incluye calzado y accesorios.",
+      "original_category": "commercial.clothing",
+      "declared_status": "Actual"
+    },
+    {
+      "id": 14,
+      "name": "Zapaterías",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.clothing.shoes"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "zapatería",
+        "zapaterías",
+        "tienda de zapatos",
+        "almacén de calzado"
+      ],
+      "specialty_notes": "Reparación de calzado: actividad distinta.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "commercial.clothing.shoes",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 15,
+      "name": "Ferreterías",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.houseware_and_hardware.hardware_and_tools"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "ferretería",
+        "ferreterías",
+        "hardware store"
+      ],
+      "specialty_notes": "Materiales de construcción, pinturas y eléctricos: especialidades separadas.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "commercial.houseware_and_hardware.hardware_and_tools",
+      "declared_status": "Actual"
+    },
+    {
+      "id": 16,
+      "name": "Librerías",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.books"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "librería",
+        "librerías",
+        "venta de libros",
+        "bookstore"
+      ],
+      "specialty_notes": "Librería-papelería: dos actividades. Biblioteca no es sinónimo.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "commercial.books",
+      "declared_status": "Actual"
+    },
+    {
+      "id": 17,
+      "name": "Tiendas de electrónica",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.elektronics"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "tienda de electrónica",
+        "almacén de electrónica",
+        "electrónica de consumo"
+      ],
+      "specialty_notes": "Celulares, computadores y electrodomésticos: subactividades, no sinónimos generales.",
+      "table_adjustment": "Corregir o precisar",
+      "search_guidance": "La documentación usa k: la clave exacta es commercial.elektronics.",
+      "original_category": "commercial.electronics",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 18,
+      "name": "Tiendas de muebles",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.furniture_and_interior"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "mueblería",
+        "mueblerías",
+        "tienda de muebles",
+        "almacén de muebles"
+      ],
+      "specialty_notes": "Colchones, decoración y cocinas: conservar especialidad.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "La categoría también incluye decoración e interiores; filtrar por descripción y actividad.",
+      "original_category": "commercial.furniture_and_interior",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 19,
+      "name": "Tiendas deportivas",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.outdoor_and_sport"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "tienda deportiva",
+        "almacén deportivo",
+        "artículos deportivos"
+      ],
+      "specialty_notes": "Deportes aislado puede aludir a escenarios o entrenamiento.",
+      "table_adjustment": "Corregir o precisar",
+      "search_guidance": "La categoría incluye artículos de actividades al aire libre. Ropa deportiva puede usar commercial.clothing.sport.",
+      "original_category": "commercial.sports",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 20,
+      "name": "Jugueterías",
+      "priority": 2,
+      "geoapify_categories": [
+        "commercial.toy_and_game"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "juguetería",
+        "jugueterías",
+        "tienda de juguetes"
+      ],
+      "specialty_notes": "Videojuegos y juegos de mesa: especialidades.",
+      "table_adjustment": "Corregir o precisar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "commercial.toys",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 21,
+      "name": "Joyerías",
+      "priority": 2,
+      "geoapify_categories": [
+        "commercial.jewelry"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "joyería",
+        "joyerías",
+        "tienda de joyas"
+      ],
+      "specialty_notes": "Bisutería y relojería: no tratarlas como equivalencias exactas.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "commercial.jewelry",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 22,
+      "name": "Hoteles",
+      "priority": 1,
+      "geoapify_categories": [
+        "accommodation.hotel"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "hotel",
+        "hoteles",
+        "alojamiento hotelero"
+      ],
+      "specialty_notes": "Hospedaje, alojamiento y posada son términos más amplios.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "accommodation.hotel",
+      "declared_status": "Actual"
+    },
+    {
+      "id": 23,
+      "name": "Hostales",
+      "priority": 2,
+      "geoapify_categories": [
+        "accommodation.hostel",
+        "accommodation.guest_house"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "hostal",
+        "hostales",
+        "hostel",
+        "hostels"
+      ],
+      "specialty_notes": "Posada y casa de huéspedes: comprobar tipo de alojamiento.",
+      "table_adjustment": "Corregir o precisar",
+      "search_guidance": "Hostal en Colombia no siempre corresponde a hostel; recuperar candidatos y conservar el tipo real.",
+      "original_category": "accommodation.hostel",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 24,
+      "name": "Bancos",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.financial.bank"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "banco",
+        "bancos",
+        "entidad bancaria",
+        "sucursal bancaria"
+      ],
+      "specialty_notes": "Corresponsal, cooperativa, cajero y oficina de giros: no equivalen a banco.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "service.financial.bank",
+      "declared_status": "Actual"
+    },
+    {
+      "id": 25,
+      "name": "Estaciones de servicio",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.vehicle.fuel"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "gasolinera",
+        "estación de servicio",
+        "estación de gasolina",
+        "bomba de gasolina",
+        "EDS"
+      ],
+      "specialty_notes": "Estación de carga eléctrica: actividad distinta.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "service.vehicle.fuel",
+      "declared_status": "Actual"
+    },
+    {
+      "id": 26,
+      "name": "Talleres de automóviles",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.vehicle.repair.car"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "taller automotriz",
+        "taller de carros",
+        "mecánica automotriz",
+        "reparación de carros"
+      ],
+      "specialty_notes": "Taller mecánico requiere distinguir carros, motos o maquinaria.",
+      "table_adjustment": "Corregir o precisar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "service.vehicle.car_repair",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 27,
+      "name": "Lavaderos de vehículos",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.vehicle.car_wash"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "lavadero de carros",
+        "lavado de autos",
+        "lavado de vehículos",
+        "car wash"
+      ],
+      "specialty_notes": "Lavadero aislado puede referirse a ropa. Lavado de motos: conservar especialidad.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Comprobar si el establecimiento atiende automóviles, motocicletas o ambos.",
+      "original_category": "service.vehicle.car_wash",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 28,
+      "name": "Peluquerías y barberías",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.beauty.hairdresser"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "peluquería",
+        "peluquerías",
+        "barbería",
+        "barberías",
+        "hairdresser"
+      ],
+      "specialty_notes": "Peluquería canina: servicio para mascotas.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Conservar barbería como subtipo propio aunque comparta categoría con peluquería.",
+      "original_category": "service.beauty.hairdresser",
+      "declared_status": "Actual"
+    },
+    {
+      "id": 29,
+      "name": "Salones y centros de belleza",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.beauty"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "salón de belleza",
+        "centro de belleza",
+        "centro de estética no médica"
+      ],
+      "specialty_notes": "Estética aislado es ambiguo. Estética médica y cirugía requieren clasificación sanitaria.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Es una categoría padre: incluye peluquería y otros servicios. Validar actividad y deduplicar.",
+      "original_category": "service.beauty",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 30,
+      "name": "Consultorios odontológicos",
+      "priority": 1,
+      "geoapify_categories": [
+        "healthcare.dentist"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "consultorio odontológico",
+        "odontólogo",
+        "odontóloga",
+        "dentista",
+        "clínica dental"
+      ],
+      "specialty_notes": "Ortodoncia, endodoncia e implantes: conservar especialidad.",
+      "table_adjustment": "Corregir o precisar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "healthcare.clinic_or_praxis",
+      "declared_status": "Actual, amplia"
+    },
+    {
+      "id": 31,
+      "name": "Clínicas y centros médicos",
+      "priority": 1,
+      "geoapify_categories": [
+        "healthcare.clinic_or_praxis"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "clínica médica",
+        "centro médico",
+        "centro de salud"
+      ],
+      "specialty_notes": "IPS y consultorio necesitan confirmar servicios. Clínica veterinaria y dental tienen otra actividad.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "La clave también recupera consultorios y especialidades; no tratarla como categoría exclusiva de clínicas.",
+      "original_category": "healthcare.clinic_or_praxis",
+      "declared_status": "Actual, amplia"
+    },
+    {
+      "id": 32,
+      "name": "Hospitales",
+      "priority": 1,
+      "geoapify_categories": [
+        "healthcare.hospital"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "hospital",
+        "hospitales"
+      ],
+      "specialty_notes": "Hospital universitario y hospital infantil: conservar especialidad. ESE no siempre significa hospital.",
+      "table_adjustment": "Corregir o precisar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "healthcare",
+      "declared_status": "Actual, amplia"
+    },
+    {
+      "id": 33,
+      "name": "Consultorios médicos",
+      "priority": 1,
+      "geoapify_categories": [
+        "healthcare.clinic_or_praxis"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "consultorio médico",
+        "consulta médica",
+        "médico",
+        "médica"
+      ],
+      "specialty_notes": "Doctor, doctora y consultorio aislados requieren contexto. Conservar cada especialidad médica.",
+      "table_adjustment": "Corregir o precisar",
+      "search_guidance": "Si se solicita medicina general, precisar a healthcare.clinic_or_praxis.general. Sin especialidad, recuperar candidatos y confirmar consulta médica.",
+      "original_category": "healthcare.doctor",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 34,
+      "name": "Veterinarias",
+      "priority": 1,
+      "geoapify_categories": [
+        "pet.veterinary"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "veterinaria",
+        "veterinario",
+        "clínica veterinaria",
+        "consultorio veterinario"
+      ],
+      "specialty_notes": "Tienda de mascotas y agropecuaria no son equivalentes.",
+      "table_adjustment": "Corregir o precisar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "healthcare.veterinary",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 35,
+      "name": "Colegios y escuelas",
+      "priority": 1,
+      "geoapify_categories": [
+        "education.school"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "colegio",
+        "escuela",
+        "institución educativa escolar"
+      ],
+      "specialty_notes": "Escuela de conducción, idiomas o música: actividades distintas.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "education.school",
+      "declared_status": "Actual"
+    },
+    {
+      "id": 36,
+      "name": "Gimnasios",
+      "priority": 1,
+      "geoapify_categories": [
+        "sport.fitness.fitness_centre",
+        "sport.fitness.gym"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "gimnasio",
+        "gimnasios",
+        "gym",
+        "centro de acondicionamiento físico"
+      ],
+      "specialty_notes": "Entrenamiento funcional, box de crossfit y entrenamiento personal: conservar modalidad.",
+      "table_adjustment": "Corregir o precisar",
+      "search_guidance": "Se prefieren instalaciones cubiertas; sport.fitness también incluye estaciones de ejercicio al aire libre.",
+      "original_category": "leisure.sport.fitness",
+      "declared_status": "Por validar"
+    },
+    {
+      "id": 37,
+      "name": "Parqueaderos",
+      "priority": 1,
+      "geoapify_categories": [
+        "parking"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "parqueadero",
+        "estacionamiento",
+        "parking",
+        "aparcadero"
+      ],
+      "specialty_notes": "Parqueadero de motos o bicicletas: conservar tipo de vehículo.",
+      "table_adjustment": "Conservar clave",
+      "search_guidance": "Geoapify también puede devolver estacionamientos públicos o gratuitos. No todos son negocios.",
+      "original_category": "parking",
+      "declared_status": "Actual"
+    },
+    {
+      "id": 38,
+      "name": "Papelerías",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.stationery"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "papelería",
+        "papelerías",
+        "útiles escolares",
+        "tienda de útiles"
+      ],
+      "specialty_notes": "Fotocopias, impresión y librería: servicios adicionales.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 39,
+      "name": "Licoreras",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.food_and_drink.drinks"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "licorera",
+        "licorería",
+        "tienda de licores",
+        "expendio de licores"
+      ],
+      "specialty_notes": "Estanco: confirmar oferta. Bar y distribuidora mayorista son actividades diferentes.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "La categoría incluye venta de bebidas sin alcohol; confirmar licencia/oferta comercial, sin inferirla por el nombre.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 40,
+      "name": "Floristerías",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.florist"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "floristería",
+        "floristerías",
+        "florería",
+        "tienda de flores"
+      ],
+      "specialty_notes": "Arreglos florales y flores para eventos: especialidades.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 41,
+      "name": "Ópticas",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.health_and_beauty.optician"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "óptica",
+        "ópticas",
+        "tienda de gafas",
+        "venta de lentes"
+      ],
+      "specialty_notes": "Optometría y oftalmología son servicios distintos a la venta de gafas.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 42,
+      "name": "Tiendas naturistas",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.health_and_beauty.herbalist"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "tienda naturista",
+        "almacén naturista",
+        "herbolario"
+      ],
+      "specialty_notes": "Suplementos y alimentos saludables: comprobar surtido y habilitación cuando aplique.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "La correspondencia depende del surtido. No equiparar automáticamente con farmacia.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 43,
+      "name": "Tiendas para mascotas",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.pet",
+        "pet.shop"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "tienda de mascotas",
+        "pet shop",
+        "alimento para mascotas",
+        "accesorios para mascotas"
+      ],
+      "specialty_notes": "Peluquería canina y atención veterinaria: servicios diferentes.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Unir y deduplicar ambas categorías. No confundir con atención veterinaria.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 44,
+      "name": "Almacenes agropecuarios",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.agrarian"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "almacén agropecuario",
+        "agropecuaria",
+        "tienda de agroinsumos",
+        "insumos agrícolas"
+      ],
+      "specialty_notes": "Fertilizantes, concentrados, semillas e insumos veterinarios: conservar línea.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 45,
+      "name": "Plazas de mercado",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.marketplace"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "plaza de mercado",
+        "mercado de abastos",
+        "galería de mercado"
+      ],
+      "specialty_notes": "Central de abastos y distribuidora mayorista: comprobar tipo.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Una plaza agrupa muchos puestos. No contar el recinto como si fuera cada comerciante.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 46,
+      "name": "Pastelerías y reposterías",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.food_and_drink.bakery",
+        "catering.cafe.cake"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "pastelería",
+        "repostería",
+        "tortería",
+        "venta de tortas"
+      ],
+      "specialty_notes": "Bizcochería, panadería y cafetería pueden combinarse.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "No hay equivalencia exclusiva para toda pastelería: puede ser comercio o cafetería.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 47,
+      "name": "Pizzerías",
+      "priority": 1,
+      "geoapify_categories": [
+        "catering.restaurant.pizza",
+        "catering.fast_food.pizza"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "pizzería",
+        "pizzerías",
+        "restaurante de pizza",
+        "pizza a domicilio"
+      ],
+      "specialty_notes": "Pizza como producto requiere contexto comercial.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Combinar servicio de restaurante y comida rápida; conservar modalidad.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 48,
+      "name": "Hamburgueserías",
+      "priority": 1,
+      "geoapify_categories": [
+        "catering.restaurant.burger",
+        "catering.fast_food.burger"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "hamburguesería",
+        "hamburgueserías",
+        "restaurante de hamburguesas"
+      ],
+      "specialty_notes": "Hamburguesa como producto no siempre define actividad principal.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 49,
+      "name": "Asaderos de pollo",
+      "priority": 1,
+      "geoapify_categories": [
+        "catering.restaurant.chicken"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "asadero de pollo",
+        "pollería de comida preparada",
+        "pollo asado",
+        "pollo a la brasa"
+      ],
+      "specialty_notes": "Asadero de carnes: clasificar por oferta. Pollo crudo es carnicería.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "No todos los asaderos locales estarán etiquetados con chicken; ampliar a restaurante solo como búsqueda general señalada.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 50,
+      "name": "Pescaderías",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.food_and_drink.seafood"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "pescadería",
+        "pescaderías",
+        "venta de pescado",
+        "expendio de pescado"
+      ],
+      "specialty_notes": "Mojarra o tilapia: conservar producto. Restaurante de pescado es otra actividad.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 51,
+      "name": "Tiendas de lácteos y quesos",
+      "priority": 2,
+      "geoapify_categories": [
+        "commercial.food_and_drink.cheese_and_dairy"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "tienda de lácteos",
+        "venta de quesos",
+        "quesería comercial"
+      ],
+      "specialty_notes": "Producción de queso y distribución industrial: actividades diferentes.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 52,
+      "name": "Bizcocherías y tiendas de achiras",
+      "priority": 2,
+      "geoapify_categories": [
+        "commercial.food_and_drink.bakery"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "bizcochería",
+        "venta de achiras",
+        "tienda de achiras",
+        "achirería"
+      ],
+      "specialty_notes": "Achiras aislado puede ser producto o planta. Producción sin tienda requiere registro propio.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Especialidad regional propia del catálogo. Geoapify no documenta una clave exclusiva para achiras.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 53,
+      "name": "Tiendas de café en grano o molido",
+      "priority": 2,
+      "geoapify_categories": [
+        "commercial.food_and_drink.coffee_and_tea"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "tienda de café en grano",
+        "venta de café molido",
+        "expendio de café"
+      ],
+      "specialty_notes": "Café especial, tostadora y compra de café pergamino: actividades distintas.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "La clave también incluye té. No usar para caficultores, acopiadores ni cafeterías sin verificar actividad.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 54,
+      "name": "Chocolaterías comerciales",
+      "priority": 2,
+      "geoapify_categories": [
+        "commercial.food_and_drink.chocolate"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "chocolatería",
+        "tienda de chocolate",
+        "venta de chocolates"
+      ],
+      "specialty_notes": "Acopio de cacao y fabricación de chocolate: actividades diferentes.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 55,
+      "name": "Tiendas de artesanías y recuerdos",
+      "priority": 2,
+      "geoapify_categories": [
+        "commercial.gift_and_souvenir"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "tienda de artesanías",
+        "venta de artesanías",
+        "tienda de recuerdos",
+        "souvenirs"
+      ],
+      "specialty_notes": "Artesano productor y taller de cerámica: clasificar aparte según actividad.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "La categoría también incluye regalos no artesanales; confirmar oferta.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 56,
+      "name": "Talleres de motocicletas",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.vehicle.repair.motorcycle"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "taller de motos",
+        "mototaller",
+        "mecánica de motos",
+        "reparación de motocicletas"
+      ],
+      "specialty_notes": "Venta de motos, repuestos y montallantas: actividades adicionales.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 57,
+      "name": "Repuestos para automóviles",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.vehicle"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "repuestos para carros",
+        "autopartes",
+        "almacén de autopartes",
+        "repuestera automotriz"
+      ],
+      "specialty_notes": "Lujos para carros y baterías: conservar línea.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "La clave también incluye vehículos. Confirmar repuestos por nombre, descripción o fuente complementaria.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 58,
+      "name": "Repuestos para motocicletas",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.vehicle"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "repuestos para motos",
+        "motopartes",
+        "almacén de motorepuestos"
+      ],
+      "specialty_notes": "Taller y concesionario de motos: actividades diferentes.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Sin subcategoría exclusiva documentada para motorepuestos; filtrar candidatos.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 59,
+      "name": "Montallantas y centros de llantas",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.vehicle.repair"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "montallantas",
+        "vulcanizadora",
+        "despinche",
+        "centro de llantas"
+      ],
+      "specialty_notes": "Venta de llantas y alineación: conservar servicio y vehículo.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Categoría general de reparación. Confirmar llantas y distinguir carros de motos.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 60,
+      "name": "Concesionarios de automóviles",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.vehicle"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "concesionario de carros",
+        "venta de automóviles",
+        "compraventa de carros"
+      ],
+      "specialty_notes": "Vehículos usados y nuevos: conservar condición.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Incluye otros comercios de vehículos; confirmar tipo y actividad de venta.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 61,
+      "name": "Venta de motocicletas",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.vehicle"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "venta de motos",
+        "concesionario de motos",
+        "almacén de motocicletas"
+      ],
+      "specialty_notes": "Motos usadas, eléctricas y motocarros: conservar tipo.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "No equiparar con repuestos o taller; confirmar actividad de venta.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 62,
+      "name": "Tiendas de bicicletas",
+      "priority": 2,
+      "geoapify_categories": [
+        "commercial.outdoor_and_sport.bicycle"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "tienda de bicicletas",
+        "bicicletería de venta",
+        "almacén de bicicletas"
+      ],
+      "specialty_notes": "Taller de bicicletas es servicio. Bicicletería aislado requiere contexto.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 63,
+      "name": "Venta de celulares y accesorios",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.elektronics"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "tienda de celulares",
+        "venta de celulares",
+        "almacén de celulares",
+        "accesorios para celular"
+      ],
+      "specialty_notes": "Reparación, operador móvil y recargas: servicios diferentes.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "La categoría no distingue celulares del resto de electrónica. Confirmar línea de productos.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 64,
+      "name": "Venta de computadores y equipos",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.elektronics"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "tienda de computadores",
+        "venta de computadores",
+        "almacén de computadores",
+        "equipos de cómputo"
+      ],
+      "specialty_notes": "Software, soporte e impresión: actividades diferentes.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "La categoría no distingue cómputo del resto de electrónica. Confirmar línea de productos.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 65,
+      "name": "Reparación de celulares",
+      "priority": 1,
+      "geoapify_categories": [],
+      "precision": "Sin específica",
+      "aliases": [
+        "reparación de celulares",
+        "servicio técnico de celulares",
+        "arreglo de celulares"
+      ],
+      "specialty_notes": "Venta de accesorios y celulares: otra actividad.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "No se encontró clave específica en la lista consultada. Usar actividad propia y fuente complementaria; no sustituir por venta de electrónica.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 66,
+      "name": "Servicio técnico de computadores",
+      "priority": 1,
+      "geoapify_categories": [],
+      "precision": "Sin específica",
+      "aliases": [
+        "reparación de computadores",
+        "mantenimiento de computadores",
+        "soporte técnico de computadores"
+      ],
+      "specialty_notes": "Desarrollo de software y venta de computadores: otras actividades.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "No hay clave de reparación informática específica en la lista consultada. office.it no garantiza este servicio.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 67,
+      "name": "Materiales de construcción",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.houseware_and_hardware.building_materials"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "depósito de materiales",
+        "materiales de construcción",
+        "almacén de construcción"
+      ],
+      "specialty_notes": "Cemento, ladrillo y agregados: conservar producto.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 68,
+      "name": "Tiendas de pinturas",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.houseware_and_hardware.building_materials.paint"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "tienda de pinturas",
+        "almacén de pinturas",
+        "pinturería"
+      ],
+      "specialty_notes": "Pintor y pintura de vehículos son servicios diferentes.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 69,
+      "name": "Vidrierías",
+      "priority": 1,
+      "geoapify_categories": [
+        "commercial.houseware_and_hardware.building_materials.glaziery"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "vidriería",
+        "vidrierías",
+        "venta de vidrios",
+        "almacén de vidrios"
+      ],
+      "specialty_notes": "Instalación, aluminio y ventanas: conservar servicio y producto.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 70,
+      "name": "Viveros y venta de plantas",
+      "priority": 2,
+      "geoapify_categories": [
+        "commercial.garden"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "vivero comercial",
+        "venta de plantas",
+        "tienda de plantas",
+        "vivero ornamental"
+      ],
+      "specialty_notes": "Paisajismo y mantenimiento de jardines: servicios distintos.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "La categoría también incluye suministros de jardinería; confirmar que vende plantas.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 71,
+      "name": "Lavanderías",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.cleaning.laundry"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "lavandería",
+        "lavanderías",
+        "lavado de ropa"
+      ],
+      "specialty_notes": "Tintorería y limpieza en seco: conservar modalidad.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 72,
+      "name": "Cerrajerías",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.locksmith"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "cerrajería",
+        "cerrajerías",
+        "cerrajero",
+        "apertura de cerraduras"
+      ],
+      "specialty_notes": "Copia de llaves: puede usar service.key_cutter como actividad adicional.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 73,
+      "name": "Carpinterías",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.carpenter"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "carpintería",
+        "carpinterías",
+        "carpintero",
+        "taller de madera"
+      ],
+      "specialty_notes": "Mueblería es venta. Ebanistería: conservar oficio.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 74,
+      "name": "Ornamentación y carpintería metálica",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.metal_construction"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "taller de ornamentación",
+        "carpintería metálica",
+        "fabricación de rejas",
+        "taller de soldadura"
+      ],
+      "specialty_notes": "Ornamentación aislado puede ser decoración; especificar metal.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Verificar que realiza fabricación o instalación metálica y no solo comercialización.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 75,
+      "name": "Servicios de electricidad",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.electrician"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "electricista",
+        "electricistas",
+        "instalaciones eléctricas",
+        "reparación eléctrica domiciliaria"
+      ],
+      "specialty_notes": "Almacén eléctrico es comercio; electricidad automotriz es taller.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 76,
+      "name": "Plomería y fontanería",
+      "priority": 1,
+      "geoapify_categories": [],
+      "precision": "Sin específica",
+      "aliases": [
+        "plomero",
+        "plomería",
+        "fontanero",
+        "fontanería",
+        "instalaciones hidrosanitarias"
+      ],
+      "specialty_notes": "Destape de tuberías: conservar servicio.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "No se encontró clave específica en el catálogo consultado; no reemplazar por service genérico como si fuera exacto.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 77,
+      "name": "Aire acondicionado y refrigeración",
+      "priority": 1,
+      "geoapify_categories": [],
+      "precision": "Sin específica",
+      "aliases": [
+        "servicio de aire acondicionado",
+        "reparación de aires acondicionados",
+        "técnico de refrigeración"
+      ],
+      "specialty_notes": "Venta de aires, refrigeración comercial y mantenimiento: distinguir oferta.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Actividad relevante para el catálogo urbano. No se encontró clave específica; separar servicio de venta de equipos.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 78,
+      "name": "Funerarias",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.funeral_directors"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "funeraria",
+        "funerarias",
+        "servicios funerarios"
+      ],
+      "specialty_notes": "Sala de velación, cementerio y crematorio: actividades diferentes.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 79,
+      "name": "Inmobiliarias",
+      "priority": 1,
+      "geoapify_categories": [
+        "office.estate_agent",
+        "service.estate_agent"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "inmobiliaria",
+        "inmobiliarias",
+        "agencia inmobiliaria",
+        "bienes raíces"
+      ],
+      "specialty_notes": "Administración de arriendos y venta de inmuebles: conservar servicio.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 80,
+      "name": "Abogados y firmas jurídicas",
+      "priority": 1,
+      "geoapify_categories": [
+        "office.lawyer"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "abogado",
+        "abogada",
+        "bufete",
+        "firma de abogados",
+        "consultorio jurídico privado"
+      ],
+      "specialty_notes": "Notaría y consultorio jurídico universitario: otros tipos de establecimiento.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 81,
+      "name": "Contadores y firmas contables",
+      "priority": 1,
+      "geoapify_categories": [
+        "office.accountant"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "contador público",
+        "contadora pública",
+        "firma contable",
+        "oficina contable"
+      ],
+      "specialty_notes": "Asesoría tributaria y revisoría fiscal: conservar especialidad.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 82,
+      "name": "Agencias y corredores de seguros",
+      "priority": 2,
+      "geoapify_categories": [
+        "office.insurance"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "agencia de seguros",
+        "corredor de seguros",
+        "oficina de seguros",
+        "aseguradora"
+      ],
+      "specialty_notes": "SOAT: producto. Seguros aislado necesita contexto comercial.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 83,
+      "name": "Agencias de publicidad y marketing",
+      "priority": 1,
+      "geoapify_categories": [
+        "office.advertising_agency"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "agencia de publicidad",
+        "agencia de marketing",
+        "agencia de mercadeo",
+        "agencia de marketing digital"
+      ],
+      "specialty_notes": "Imprenta, community manager y diseño gráfico: conservar servicio, no equivalencia exacta.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "La clave no garantiza marketing digital. Evitar service.advertising porque incluye soportes y vallas.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 84,
+      "name": "Empresas de software y servicios TI",
+      "priority": 1,
+      "geoapify_categories": [
+        "office.it"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "empresa de software",
+        "desarrollo de software",
+        "desarrollo web",
+        "empresa de tecnología informática"
+      ],
+      "specialty_notes": "Soporte, hosting y aplicaciones: conservar servicio. Tienda de equipos no es equivalente.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "La categoría abarca oficinas de tecnologías de la información. Confirmar desarrollo o servicio requerido.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 85,
+      "name": "Transporte de carga y logística",
+      "priority": 1,
+      "geoapify_categories": [
+        "office.logistics"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "empresa de transporte de carga",
+        "transportadora de mercancías",
+        "empresa de logística"
+      ],
+      "specialty_notes": "Trasteos, transporte de pasajeros y mensajería: servicios diferentes.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Representa oficinas de logística; no asegura flota, transporte efectivo ni todos los transportadores.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 86,
+      "name": "Mensajería y paquetería",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.post.office"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "empresa de mensajería",
+        "envío de paquetes",
+        "oficina de encomiendas",
+        "courier"
+      ],
+      "specialty_notes": "Domicilios de comida y transporte de carga: actividades distintas.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Puede incluir oficinas postales; confirmar servicio privado de paquetería o encomiendas.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 87,
+      "name": "Agencias de viajes",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.travel_agency",
+        "office.travel_agent"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "agencia de viajes",
+        "agencia turística de viajes",
+        "travel agency"
+      ],
+      "specialty_notes": "Operador turístico y guía de turismo: actividades distintas.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 88,
+      "name": "Salones y recintos para eventos",
+      "priority": 1,
+      "geoapify_categories": [
+        "activity.events_venue"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "salón de eventos",
+        "salón de recepciones",
+        "centro de eventos",
+        "recinto de eventos"
+      ],
+      "specialty_notes": "Organizador, alquiler de sillas y catering: servicios distintos del recinto.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 89,
+      "name": "Discotecas",
+      "priority": 2,
+      "geoapify_categories": [
+        "adult.nightclub"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "discoteca",
+        "discotecas",
+        "club nocturno de baile"
+      ],
+      "specialty_notes": "Bar y gastrobar: otras modalidades.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Geoapify agrupa nightclub bajo adult. Ese nombre técnico no implica servicios sexuales del establecimiento.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 90,
+      "name": "Spas",
+      "priority": 2,
+      "geoapify_categories": [
+        "service.beauty.spa"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "spa",
+        "spas",
+        "centro de spa"
+      ],
+      "specialty_notes": "Masajes, termales y estética médica: distinguir servicio.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 91,
+      "name": "Salones de uñas",
+      "priority": 1,
+      "geoapify_categories": [
+        "service.beauty"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "salón de uñas",
+        "estudio de uñas",
+        "manicure",
+        "manicura",
+        "pedicure",
+        "pedicura"
+      ],
+      "specialty_notes": "Pestañas y cejas: servicios adicionales, no sinónimos.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "No hay subcategoría específica de uñas en la lista consultada. Confirmar servicio antes de mostrar coincidencia.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 92,
+      "name": "Jardines infantiles y guarderías",
+      "priority": 1,
+      "geoapify_categories": [
+        "childcare.kindergarten"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "jardín infantil",
+        "guardería infantil",
+        "preescolar privado"
+      ],
+      "specialty_notes": "Guardería de mascotas: actividad distinta. Hogar infantil: confirmar tipo de institución.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 93,
+      "name": "Institutos técnicos y tecnológicos",
+      "priority": 2,
+      "geoapify_categories": [
+        "education.college"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "instituto técnico",
+        "instituto tecnológico",
+        "centro de formación técnica"
+      ],
+      "specialty_notes": "Academia aislado es ambiguo; verificar oferta y tipo institucional.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Categoría internacional aproximada. No acredita ni homologa niveles educativos colombianos.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 94,
+      "name": "Universidades",
+      "priority": 2,
+      "geoapify_categories": [
+        "education.university"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "universidad",
+        "universidades",
+        "sede universitaria"
+      ],
+      "specialty_notes": "Institución universitaria: verificar tipo y oferta.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 95,
+      "name": "Escuelas de conducción",
+      "priority": 1,
+      "geoapify_categories": [
+        "education.driving_school"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "escuela de conducción",
+        "academia de conducción",
+        "centro de enseñanza automovilística",
+        "CEA"
+      ],
+      "specialty_notes": "Tramitador y organismo de tránsito: actividades diferentes.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 96,
+      "name": "Academias de idiomas",
+      "priority": 2,
+      "geoapify_categories": [
+        "education.language_school"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "academia de idiomas",
+        "escuela de idiomas",
+        "instituto de idiomas",
+        "escuela de inglés"
+      ],
+      "specialty_notes": "Clases particulares sin sede: pueden no aparecer como lugar.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 97,
+      "name": "Laboratorios clínicos",
+      "priority": 1,
+      "geoapify_categories": [],
+      "precision": "Sin específica",
+      "aliases": [
+        "laboratorio clínico",
+        "laboratorio de análisis clínicos",
+        "toma de muestras clínicas"
+      ],
+      "specialty_notes": "Laboratorio dental, industrial y de suelos: actividades distintas.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "No se encontró categoría específica en la lista consultada. No confundir con clínica general ni inventar healthcare.laboratory.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 98,
+      "name": "Consultorios de psicología",
+      "priority": 1,
+      "geoapify_categories": [
+        "healthcare.clinic_or_praxis"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "psicólogo",
+        "psicóloga",
+        "consultorio de psicología",
+        "atención psicológica"
+      ],
+      "specialty_notes": "Psiquiatría es especialidad médica distinta.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Sin subcategoría de psicología documentada; confirmar servicio en candidatos o fuente adicional.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 99,
+      "name": "Centros de fisioterapia",
+      "priority": 1,
+      "geoapify_categories": [
+        "healthcare.clinic_or_praxis"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "fisioterapia",
+        "fisioterapeuta",
+        "centro de fisioterapia",
+        "terapia física"
+      ],
+      "specialty_notes": "Rehabilitación integral puede incluir servicios adicionales.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Sin subcategoría de fisioterapia documentada; confirmar servicio antes de presentar coincidencia.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 100,
+      "name": "Restaurantes de comida típica huilense",
+      "priority": 2,
+      "geoapify_categories": [
+        "catering.restaurant"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "restaurante típico huilense",
+        "comida típica huilense",
+        "restaurante de comida huilense"
+      ],
+      "specialty_notes": "Asado huilense, tamal huilense y lechona: conservar plato y procedencia real.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Especialidad propia del catálogo. No existe clave huilense documentada; no equiparar automáticamente con caribbean.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 101,
+      "name": "Fincas turísticas con alojamiento",
+      "priority": 2,
+      "geoapify_categories": [
+        "accommodation.guest_house"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "finca turística con hospedaje",
+        "alojamiento rural",
+        "casa de huéspedes rural"
+      ],
+      "specialty_notes": "Finca recreativa sin alojamiento y pasadía: actividades diferentes.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Clave aproximada. Verificar alojamiento y carácter rural; no asegura todas las fincas turísticas.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 102,
+      "name": "Glamping y campamentos turísticos",
+      "priority": 2,
+      "geoapify_categories": [
+        "camping.camp_site"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "glamping",
+        "alojamiento glamping",
+        "camping turístico",
+        "zona de camping"
+      ],
+      "specialty_notes": "Glamping y camping conservan subtipos distintos; no son sinónimos exactos.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "No hay clave exclusiva de glamping documentada. Algunos alojamientos pueden estar clasificados en accommodation.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 103,
+      "name": "Operadores turísticos",
+      "priority": 2,
+      "geoapify_categories": [
+        "service.travel_agency",
+        "office.travel_agent"
+      ],
+      "precision": "Amplia",
+      "aliases": [
+        "operador turístico",
+        "operador de turismo",
+        "empresa de excursiones",
+        "agencia operadora"
+      ],
+      "specialty_notes": "Guía turístico independiente no equivale a agencia.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Recuperación aproximada. Confirmar operación de experiencias, rutas o excursiones; no basta la categoría de agencia.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 104,
+      "name": "Piscícolas y productores de pescado",
+      "priority": 2,
+      "geoapify_categories": [],
+      "precision": "Sin específica",
+      "aliases": [
+        "piscícola",
+        "empresa piscícola",
+        "productor de tilapia",
+        "productor de mojarra",
+        "acuicultor"
+      ],
+      "specialty_notes": "Pescadería y restaurante de pescado: actividades diferentes.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "No se encontró categoría de producción piscícola en la lista consultada. Requiere registro propio o fuente sectorial.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 105,
+      "name": "Productores de café",
+      "priority": 2,
+      "geoapify_categories": [],
+      "precision": "Sin específica",
+      "aliases": [
+        "productor de café",
+        "caficultor",
+        "caficultora",
+        "finca cafetera productora"
+      ],
+      "specialty_notes": "Tienda de café, cafetería y comprador de pergamino: otras actividades.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "No se encontró categoría específica de producción cafetera. No usar tienda de café como equivalencia.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 106,
+      "name": "Comercializadoras y centros de acopio de cacao",
+      "priority": 2,
+      "geoapify_categories": [],
+      "precision": "Sin específica",
+      "aliases": [
+        "comercializadora de cacao",
+        "comprador de cacao",
+        "centro de acopio de cacao"
+      ],
+      "specialty_notes": "Cacaocultor y fabricante de chocolate: actividades distintas.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "No se encontró clave de acopio o comercio mayorista de cacao. Mantener actividad propia y fuente complementaria.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 107,
+      "name": "Trilladoras y tostadoras de café",
+      "priority": 2,
+      "geoapify_categories": [],
+      "precision": "Sin específica",
+      "aliases": [
+        "trilladora de café",
+        "tostadora de café",
+        "planta de tostión de café"
+      ],
+      "specialty_notes": "Trilla y tostión son procesos diferentes; conservar subtipo. Venta al público es otra actividad.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "No se encontró categoría industrial específica. production.factory es demasiado general para habilitar coincidencia automática.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 108,
+      "name": "Constructoras",
+      "priority": 1,
+      "geoapify_categories": [],
+      "precision": "Sin específica",
+      "aliases": [
+        "constructora",
+        "empresa constructora",
+        "construcción de edificaciones",
+        "contratista de obra civil"
+      ],
+      "specialty_notes": "Arquitectura, inmobiliaria y materiales: actividades distintas.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "No se encontró categoría específica de empresa constructora. office.company y building.industrial no identifican esta actividad.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 109,
+      "name": "Centros de salud ocupacional",
+      "priority": 1,
+      "geoapify_categories": [
+        "healthcare.clinic_or_praxis.occupational"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "centro de salud ocupacional",
+        "medicina del trabajo",
+        "exámenes médicos ocupacionales"
+      ],
+      "specialty_notes": "Consultoría en SST y venta de elementos de protección: otros servicios.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "Aplicar filtro geográfico y comprobar cobertura local.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    },
+    {
+      "id": 110,
+      "name": "Centros de imágenes diagnósticas",
+      "priority": 1,
+      "geoapify_categories": [
+        "healthcare.clinic_or_praxis.radiology"
+      ],
+      "precision": "Directa",
+      "aliases": [
+        "centro de imágenes diagnósticas",
+        "radiología",
+        "centro radiológico"
+      ],
+      "specialty_notes": "Ecografía, resonancia y tomografía: conservar modalidad y confirmar oferta.",
+      "table_adjustment": "Agregar",
+      "search_guidance": "La categoría identifica radiología; no garantiza disponibilidad de cada examen.",
+      "original_category": "—",
+      "declared_status": "Nueva propuesta"
+    }
+  ]
+}

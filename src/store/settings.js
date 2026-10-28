@@ -48,7 +48,7 @@ function createSettings({ dir, kdf = vault.DEFAULT_KDF }) {
     return getStatus();
   }
 
-  async function saveKey({ apiKey, passphrase }) {
+  async function saveKeyFor(keyName, { apiKey, passphrase }) {
     const key = typeof apiKey === 'string' ? apiKey.trim() : '';
     if (!KEY_FORMAT.test(key)) {
       throw new UserError('La llave no parece válida: debe tener entre 8 y 300 caracteres, sin espacios.');
@@ -59,43 +59,50 @@ function createSettings({ dir, kdf = vault.DEFAULT_KDF }) {
     }
 
     const data = read();
-    const provider = currentProvider(data);
     if (pass) {
-      data.keys = { ...data.keys, [provider]: await vault.encrypt(key, pass, kdf) };
+      data.keys = { ...data.keys, [keyName]: await vault.encrypt(key, pass, kdf) };
       write(data);
     }
-    memory[provider] = key;
+    memory[keyName] = key;
     return getStatus();
   }
 
-  async function unlock(passphrase) {
+  async function unlockKeyFor(keyName, passphrase) {
     const data = read();
-    const provider = currentProvider(data);
-    const record = data.keys?.[provider];
+    const record = data.keys?.[keyName];
     if (!record) throw new UserError('No hay una llave guardada para este proveedor.');
     const key = typeof passphrase === 'string' ? await vault.decrypt(record, passphrase) : null;
     if (!key) throw new UserError('Contraseña incorrecta.');
-    memory[provider] = key;
+    memory[keyName] = key;
     return getStatus();
   }
 
-  function deleteKey() {
+  function deleteKeyFor(keyName) {
     const data = read();
-    const provider = currentProvider(data);
-    delete memory[provider];
+    delete memory[keyName];
     if (data.keys) {
-      delete data.keys[provider];
+      delete data.keys[keyName];
       write(data);
     }
     return getStatus();
   }
 
+  const saveKey = (input) => saveKeyFor(currentProvider(read()), input ?? {});
+  const unlock = (passphrase) => unlockKeyFor(currentProvider(read()), passphrase);
+  const deleteKey = () => deleteKeyFor(currentProvider(read()));
   // Solo para el proceso principal (planificador). Nunca exponer por IPC.
   function getApiKey(provider) {
     return memory[provider] ?? null;
   }
 
-  return { getStatus, setProvider, saveKey, unlock, deleteKey, getApiKey };
+  return {
+    getStatus,
+    setProvider,
+    saveKey,
+    unlock,
+    deleteKey,
+    getApiKey,
+  };
 }
 
 module.exports = { createSettings, UserError, PROVIDERS };

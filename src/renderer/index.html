@@ -7,48 +7,131 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>Segmenta IA</h1>
-    <span class="badge">EN DESARROLLO</span>
+  <header class="topbar">
+    <div class="brand">
+      <!-- Copia de assets/logo.svg en línea: la política de seguridad no permite cargar imágenes. -->
+      <svg class="logo" viewBox="143 162 970 970" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="888,740 1050,813 1050,1000 888,927" fill="#0BA597" stroke="#0BA597" stroke-width="20"/>
+        <polygon points="888,490 1050,563 1050,750 888,677" fill="#0BA597" stroke="#0BA597" stroke-width="20"/>
+        <polygon points="805,182 1050,292 1050,500 888,427 888,330 805,293" fill="#0BA597" stroke="#0BA597" stroke-width="20"/>
+        <polygon points="585,757 840,872 840,1067 585,952" fill="#0E2754" stroke="#0E2754" stroke-width="20"/>
+        <polygon points="585,507 840,622 840,817 585,702" fill="#0E2754" stroke="#0E2754" stroke-width="20"/>
+        <polygon points="487,187 840,346 840,570 585,455 585,354 487,310" fill="#0E2754" stroke="#0E2754" stroke-width="20"/>
+        <polygon points="207,757 535,905 535,1100 207,952" fill="#1652FD" stroke="#1652FD" stroke-width="20"/>
+        <polygon points="207,507 535,655 535,850 207,702" fill="#1652FD" stroke="#1652FD" stroke-width="20"/>
+        <polygon points="207,252 535,400 535,595 207,447" fill="#1652FD" stroke="#1652FD" stroke-width="20"/>
+        <polygon points="832.8,227.6 835.9,241.3 839.1,254.3 842.6,266.5 846.4,277.9 850.5,288.7 855,298.7 859.8,308.1 865,316.9 870.6,325.1 876.7,332.7 883.2,339.8 890.3,346.3 897.9,352.4 906.1,358 914.9,363.2 924.3,368 934.3,372.5 945.1,376.6 956.5,380.4 968.7,383.9 981.7,387.1 995.4,390.2 1010,393 995.4,395.8 981.7,398.9 968.7,402.1 956.5,405.6 945.1,409.4 934.3,413.5 924.3,418 914.9,422.8 906.1,428 897.9,433.6 890.3,439.7 883.2,446.2 876.7,453.3 870.6,460.9 865,469.1 859.8,477.9 855,487.3 850.5,497.3 846.4,508.1 842.6,519.5 839.1,531.7 835.9,544.7 832.8,558.4 830,573 827.2,558.4 824.1,544.7 820.9,531.7 817.4,519.5 813.6,508.1 809.5,497.3 805,487.3 800.2,477.9 795,469.1 789.4,460.9 783.3,453.3 776.8,446.2 769.7,439.7 762.1,433.6 753.9,428 745.1,422.8 735.7,418 725.7,413.5 714.9,409.4 703.5,405.6 691.3,402.1 678.3,398.9 664.6,395.8 650,393 664.6,390.2 678.3,387.1 691.3,383.9 703.5,380.4 714.9,376.6 725.7,372.5 735.7,368 745.1,363.2 753.9,358 762.1,352.4 769.7,346.3 776.8,339.8 783.3,332.7 789.4,325.1 795,316.9 800.2,308.1 805,298.7 809.5,288.7 813.6,277.9 817.4,266.5 820.9,254.3 824.1,241.3 827.2,227.6 830,213" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="16"/>
+      </svg>
+      <h1>Segmenta IA</h1>
+    </div>
+    <button id="openSettings" class="ghost" type="button">
+      <span id="keyDot" class="dot" aria-hidden="true"></span> Ajustes
+    </button>
   </header>
 
   <main>
-    <section>
-      <h2>Pedido</h2>
-      <textarea id="request" rows="3" maxlength="500"
-        placeholder="Ej.: restaurantes de Neiva con teléfono y sitio web"></textarea>
-      <button id="run">Generar plan</button>
-      <pre id="plan" role="status"></pre>
-      <p class="hint">Hoy solo se genera y muestra el plan: la búsqueda y el CSV aún no están construidos.</p>
+    <!-- 1 · Inicio -->
+    <section id="viewStart" class="view view-start">
+      <h2 class="title">¿Qué prospectos necesitas?</h2>
+      <p class="subtitle">Describe el tipo de negocio, el lugar y los datos que quieres obtener.</p>
+      <div class="request-box">
+        <textarea id="request" rows="3" maxlength="500"
+          placeholder="Ej.: restaurantes en Neiva con teléfono y sitio web"
+          aria-label="Pedido"></textarea>
+        <span id="charCount" class="char-count">0/500</span>
+      </div>
+      <button id="run" class="primary big" type="button">Buscar prospectos</button>
+      <p id="startMessage" class="message" role="status" aria-live="polite"></p>
+      <p class="footnote">
+        <button id="footSettings" class="link" type="button">Ajustes</button>:
+        <span id="keySummary">llave de IA</span>
+      </p>
     </section>
 
-    <section>
-      <h2>Ajustes</h2>
-      <label for="provider">Proveedor de IA</label>
-      <select id="provider">
-        <option value="gemini">Gemini</option>
-        <option value="openai">OpenAI</option>
-      </select>
-
-      <label for="apiKey">Llave de API</label>
-      <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="Pega la llave">
-
-      <label for="passphrase">Contraseña para guardarla cifrada (opcional)</label>
-      <input id="passphrase" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
-      <p class="hint">Sin contraseña, la llave solo se conserva mientras la aplicación esté abierta y no se escribe en el disco. Si olvidas la contraseña, tendrás que pegar la llave de nuevo.</p>
-
-      <button id="save">Usar llave</button>
-
-      <div id="unlockBox" hidden>
-        <label for="unlockPass">Contraseña de la llave guardada</label>
-        <input id="unlockPass" type="password" autocomplete="current-password">
-        <button id="unlock">Desbloquear</button>
+    <!-- 2 · Progreso -->
+    <section id="viewProgress" class="view view-progress" hidden>
+      <div id="planCard" class="card tinted" hidden>
+        <h3>Plan interpretado</h3>
+        <dl id="planDetails" class="plan-details"></dl>
+        <ul id="planNotes" class="notes"></ul>
       </div>
 
-      <button id="delete">Borrar llave</button>
-      <p id="status" role="status"></p>
+      <ol id="steps" class="steps">
+        <li data-step="interpret">Interpretando el pedido</li>
+        <li data-step="validate">Validando el plan</li>
+        <li data-step="search">Buscando en las fuentes</li>
+        <li data-step="dedupe">Quitando duplicados</li>
+        <li data-step="ready">Preparando los resultados</li>
+      </ol>
+
+      <div class="bar" aria-hidden="true"><div id="barFill" class="bar-fill"></div></div>
+      <p id="progress" class="message" role="status" aria-live="polite"></p>
+
+      <div id="progressError" class="error-box" hidden>
+        <p id="progressErrorText"></p>
+        <ul id="progressErrorList"></ul>
+        <button id="backFromError" class="primary" type="button">Volver al pedido</button>
+      </div>
+    </section>
+
+    <!-- 3 · Resultado -->
+    <section id="viewResults" class="view view-results" hidden>
+      <div class="card tinted result-head">
+        <div>
+          <h3 id="fileName">Resultados</h3>
+          <p id="summary" class="muted"></p>
+        </div>
+        <button id="newSearch" class="ghost" type="button">Nueva búsqueda</button>
+      </div>
+      <div id="warnings" class="notes-box"></div>
+      <div class="table-scroll">
+        <table id="resultsTable"></table>
+      </div>
+      <p id="resultsNote" class="muted small"></p>
+      <div class="actions">
+        <button id="export" class="primary" type="button" disabled>Guardar CSV</button>
+        <button id="openCsv" class="primary" type="button" hidden>Abrir CSV</button>
+        <button id="showFolder" class="outline" type="button" hidden>Mostrar carpeta</button>
+      </div>
+      <p id="exportMessage" class="message" role="status" aria-live="polite"></p>
     </section>
   </main>
+
+  <!-- Ajustes -->
+  <dialog id="settingsDialog" aria-labelledby="settingsTitle">
+    <div class="dialog-head">
+      <h2 id="settingsTitle">Ajustes</h2>
+      <button id="closeSettings" class="icon" type="button" aria-label="Cerrar">×</button>
+    </div>
+
+    <label for="provider">Proveedor de IA</label>
+    <select id="provider">
+      <option value="gemini">Gemini</option>
+      <option value="openai">OpenAI</option>
+    </select>
+
+    <label for="apiKey">Llave de API</label>
+    <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="Pega la llave">
+
+    <label for="passphrase">Contraseña para guardarla cifrada (opcional)</label>
+    <input id="passphrase" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
+    <p class="muted small">Sin contraseña, la llave solo se conserva mientras la aplicación esté abierta y no se escribe en el disco. Si olvidas la contraseña, tendrás que pegar la llave de nuevo.</p>
+
+    <div id="unlockBox" hidden>
+      <label for="unlockPass">Contraseña de la llave guardada</label>
+      <div class="inline">
+        <input id="unlockPass" type="password" autocomplete="current-password">
+        <button id="unlock" class="primary" type="button">Desbloquear</button>
+      </div>
+    </div>
+
+    <p id="status" class="status" role="status"></p>
+
+    <div class="actions">
+      <button id="save" class="primary" type="button">Usar llave</button>
+      <button id="delete" class="danger" type="button">Borrar llave</button>
+    </div>
+  </dialog>
 
   <script src="renderer.js"></script>
 </body>
